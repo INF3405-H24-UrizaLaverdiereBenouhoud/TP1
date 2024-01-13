@@ -18,24 +18,12 @@ public class Message {
         return author;
     }
 
-    public void setAuthor(Client author) {
-        this.author = author;
-    }
-
     public LocalDateTime getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
     public String getContent() {
         return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     private String getFormattedTime() {
