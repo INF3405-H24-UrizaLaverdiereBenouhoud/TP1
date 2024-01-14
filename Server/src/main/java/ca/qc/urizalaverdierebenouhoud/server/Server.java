@@ -8,10 +8,7 @@ import java.net.Socket;
 
     public class Server {
         private static ServerSocket server;
-
         public static void main(String[] args) throws Exception {
-
-
           server = new ServerSocket(); // initialize server
             String serverAddress =  "0.0.0.0"; //wildcard | IP at which the server should be listening
             int serverPort = 5003;
@@ -22,11 +19,14 @@ import java.net.Socket;
                     Socket client = server.accept(); //blocs code until connection request is made
                     BufferedInputStream message = new BufferedInputStream(client.getInputStream());
                    readMessage(message);
+                   //should send confirmation message is received
+
                 }
             } finally {
                 server.close();
             }
         }
+
         private static void readMessage(BufferedInputStream message) throws IOException {
             int letter;
             if(message ==null)
@@ -46,7 +46,5 @@ import java.net.Socket;
             catch (IOException e){
                 e.printStackTrace();
             }
-
         }
-
     }
