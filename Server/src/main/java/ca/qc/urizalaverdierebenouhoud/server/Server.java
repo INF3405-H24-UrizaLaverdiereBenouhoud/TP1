@@ -18,8 +18,6 @@ import java.net.Socket;
             try {
                 while (true) {
                     Socket client = server.accept(); //blocs code until connection request is made
-//                    BufferedInputStream message = new BufferedInputStream(client.getInputStream());
-//                   readMessage(message);
                    //should send confirmation message is received
                     DataInput message = new DataInputStream(client.getInputStream());
                     System.out.println(message.readUTF());

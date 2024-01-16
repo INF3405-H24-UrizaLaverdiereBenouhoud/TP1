@@ -61,14 +61,17 @@ public class Client {
         try {
            String TestipAddress = "192.168.100.133";
            int TestPort = 5003;
-            Socket client = new Socket(TestipAddress,TestPort);
 
             Scanner scanner = new Scanner(System.in);
-            String message = scanner.nextLine();
-            DataOutputStream out = new DataOutputStream(client.getOutputStream());
-            out.writeUTF(message);
-            out.flush();
 
+            while(true) {
+                Socket client = new Socket(TestipAddress,TestPort);
+                DataOutputStream out = new DataOutputStream(client.getOutputStream());
+                String message = scanner.nextLine();
+                out.writeUTF(message);
+                out.flush(); // sends data
+                client.close();
+            }
             }
         catch (Exception e)
         {
