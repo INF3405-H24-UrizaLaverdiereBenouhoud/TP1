@@ -18,9 +18,11 @@ import java.net.Socket;
             try {
                 while (true) {
                     Socket client = server.accept(); //blocs code until connection request is made
-                    BufferedInputStream message = new BufferedInputStream(client.getInputStream());
-                   readMessage(message);
+//                    BufferedInputStream message = new BufferedInputStream(client.getInputStream());
+//                   readMessage(message);
                    //should send confirmation message is received
+                    DataInput message = new DataInputStream(client.getInputStream());
+                    System.out.println(message.readUTF());
 
                 }
             } finally {
@@ -28,7 +30,8 @@ import java.net.Socket;
             }
         }
 
-        private static void readMessage(BufferedInputStream message) throws IOException {
+        private static void readMessage(BufferedInputStream message) throws IOException  // not sure if this is right
+        {
             int letter;
             if(message ==null)
                 return;

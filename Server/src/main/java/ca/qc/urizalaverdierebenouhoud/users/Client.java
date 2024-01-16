@@ -51,4 +51,15 @@ public class Client {
         this.ipAddress = ipAddress;
         this.port = port;
     }
+
+    public static void main(String[] args)
+    {
+        //login
+
+        //validation
+
+        //can send messages
+
+
+    }
 }
