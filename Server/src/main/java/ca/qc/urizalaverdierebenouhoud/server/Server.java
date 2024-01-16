@@ -8,11 +8,12 @@ import java.net.Socket;
 
     public class Server {
         private static ServerSocket server;
+
+        private static String serverAddress =  "0.0.0.0"; //wildcard | IP at which the server should be listening
+        private static int serverPort = 5003;
         public static void main(String[] args) throws Exception {
           server = new ServerSocket(); // initialize server
-            String serverAddress =  "0.0.0.0"; //wildcard | IP at which the server should be listening
-            int serverPort = 5003;
-            startServer(server,serverAddress,serverPort);
+            startServer(server);
             //serveur mis en écoute sur ce point
             try {
                 while (true) {
@@ -35,7 +36,7 @@ import java.net.Socket;
                 System.out.print((char)letter);
         }
 
-        private static void startServer(ServerSocket server, String serverAddress, int serverPort)
+        private static void startServer(ServerSocket server)
         {
              try{
                  server.setReuseAddress(true); // so socket does not enter timewait state
