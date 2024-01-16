@@ -63,11 +63,20 @@ public class Client {
            int TestPort = 5003;
 
             Scanner scanner = new Scanner(System.in);
+            //login
+            //enter username
 
+            //enter password
+
+            //validation
+                //if user does not exist add to DB
+
+            //send message TODO: need to implement return from server
             while(true) {
                 Socket client = new Socket(TestipAddress,TestPort);
                 DataOutputStream out = new DataOutputStream(client.getOutputStream());
                 String message = scanner.nextLine();
+                out.writeByte(2);
                 out.writeUTF(message);
                 out.flush(); // sends data
                 client.close();
@@ -77,13 +86,6 @@ public class Client {
         {
             System.err.println(e);
         }
-        //login
-            //enter username
-
-            //enter password
-
-        //validation
-            //if user does not exist add to DB
 
         //can send messages
 

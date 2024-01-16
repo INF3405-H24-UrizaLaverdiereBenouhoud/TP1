@@ -32,13 +32,7 @@ import java.net.Socket;
         }
         private static void interpretStreamContent(DataInput in) throws IOException
         {
-
-            try {
-                Byte task = in.readByte();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            switch (readFirstByte(in))
+            switch ( (int)readFirstByte(in))
             {
                 case 0: //login
 
@@ -48,15 +42,20 @@ import java.net.Socket;
                     break;
 
                 case 2: // client sent message
+                    System.out.println("task 2 initiated");
                     readMessage(in);
                     break;
+                default:
+                    System.out.println("No task associated with Byte");
             }
         }
 
         private static Byte readFirstByte(DataInput in)
         {
             try {
-                return in.readByte();
+                Byte task = in.readByte();
+                System.out.println("task type: "+ task);
+                return task;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -64,12 +63,6 @@ import java.net.Socket;
 
         private static void readMessage(DataInput message) throws IOException  // not sure if this is right
         {
-
-            switch (message.readUnsignedByte())
-            {
-            }
-
-
             System.out.println(message.readUTF());
         }
 
