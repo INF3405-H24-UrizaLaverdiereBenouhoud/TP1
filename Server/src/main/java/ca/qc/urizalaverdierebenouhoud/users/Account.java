@@ -2,12 +2,9 @@ package ca.qc.urizalaverdierebenouhoud.users;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.Inet4Address;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -51,7 +48,6 @@ public class Account {
     /**
      *  Takes the accounts defined into the provided JSON file and loads them into
      *  the accounts ArrayList.
-     *
      *  Will make the program exit with 1 code if file couldn't be loaded
      * @param file The JSON file containing the accounts to load.
      */
