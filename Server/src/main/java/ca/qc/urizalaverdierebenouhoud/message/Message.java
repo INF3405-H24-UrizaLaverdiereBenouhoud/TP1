@@ -64,7 +64,7 @@ public class Message implements Comparable<Message> {
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
                 .create();
 
-        String fileContent = null;
+        String fileContent;
         try {
             fileContent = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
 
