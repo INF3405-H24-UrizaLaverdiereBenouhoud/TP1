@@ -9,7 +9,7 @@ import java.net.Socket;
     public class Server {
         private static ServerSocket server;
 
-        private static String serverAddress =  "0.0.0.0"; //wildcard | IP at which the server should be listening
+        private static String serverAddress ="192.168.100.133";  //"0.0.0.0"; //wildcard | IP at which the server should be listening
         private static int serverPort = 5003;
         public static void main(String[] args) throws Exception {
           server = new ServerSocket(); // initialize server

@@ -1,6 +1,10 @@
 package ca.qc.urizalaverdierebenouhoud.users;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.net.Inet4Address;
+import java.net.Socket;
+import java.util.Scanner;
 
 public class Client {
     private String username;
@@ -54,11 +58,32 @@ public class Client {
 
     public static void main(String[] args)
     {
+        try {
+           String TestipAddress = "192.168.100.133";
+           int TestPort = 5003;
+            Socket client = new Socket(TestipAddress,TestPort);
+
+            Scanner scanner = new Scanner(System.in);
+            String message = scanner.nextLine();
+            DataOutputStream out = new DataOutputStream(client.getOutputStream());
+            out.writeUTF(message);
+            out.flush();
+
+            }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         //login
+            //enter username
+
+            //enter password
 
         //validation
+            //if user does not exist add to DB
 
         //can send messages
+
 
 
     }
