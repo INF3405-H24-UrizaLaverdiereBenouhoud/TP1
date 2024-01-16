@@ -1,0 +1,29 @@
+[
+  {
+    "author": {
+      "username": "cohenmaud",
+      "ipAddress": "192.168.0.2",
+      "port": 46202
+    },
+    "time": "2024-01-12T00:32:41",
+    "content": "Salut Utilisateur 2 !"
+  },
+  {
+    "author": {
+      "username": "mehdiben",
+      "ipAddress": "192.168.0.22",
+      "port": 46234
+    },
+    "time": "2024-01-12T00:33:41",
+    "content": "Salut Utilisateur 1!"
+  },
+  {
+    "author": {
+      "username": "belljimmy",
+      "ipAddress": "192.168.0.22",
+      "port": 46234
+    },
+    "time": "2023-02-24T00:14:41",
+    "content": "C'est quoi le STEP?"
+  }
+]
