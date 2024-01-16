@@ -87,7 +87,6 @@ public class Client {
 
         //can send messages
 
-
-
     }
+
 }

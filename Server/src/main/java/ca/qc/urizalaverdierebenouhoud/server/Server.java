@@ -18,23 +18,22 @@ import java.net.Socket;
             try {
                 while (true) {
                     Socket client = server.accept(); //blocs code until connection request is made
-                   //should send confirmation message is received
-                    DataInput message = new DataInputStream(client.getInputStream());
-                    System.out.println(message.readUTF());
 
+                    //    Should create switch case with with Byte readByte(); of DataInputStream
+
+
+                   //should send confirmation message is received
+                 readMessage(client);
                 }
             } finally {
                 server.close();
             }
         }
 
-        private static void readMessage(BufferedInputStream message) throws IOException  // not sure if this is right
+        private static void readMessage(Socket client) throws IOException  // not sure if this is right
         {
-            int letter;
-            if(message ==null)
-                return;
-            while ((letter=message.read()) != -1)
-                System.out.print((char)letter);
+            DataInput message = new DataInputStream(client.getInputStream());
+            System.out.println(message.readUTF());
         }
 
         private static void startServer(ServerSocket server)
