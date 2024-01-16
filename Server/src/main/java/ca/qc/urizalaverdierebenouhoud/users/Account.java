@@ -12,9 +12,7 @@ import java.net.Inet4Address;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 public class Account {
     private static final Logger accountLogger = Logger.getLogger(Account.class.getName());
@@ -24,11 +22,22 @@ public class Account {
     @SerializedName("password")
     private String password;
 
-    public static Client login(String username, String password) throws Exception {
-        // TODO Implement rejection if the username/password combo is invalid
-        // TODO Implement method login for Account
-        // TODO Handle exceptions
-        return new Client(new Account(username, password), (Inet4Address) Inet4Address.getByName("192.168.0.199"), 25565);
+    /**
+     * Takes the accounts defined into the provided JSON file and loads them into
+     * @param username The username of the account to find
+     * @param password The password of the account to find
+     * @param ipAddress The IP Address of the client
+     * @param port The port of the client
+     * @return The Client object corresponding to the account
+     * @throws InvalidUsernamePasswordComboException If the username/password combo is invalid
+     */
+    public static Client login(String username, String password, Inet4Address ipAddress, int port) throws InvalidUsernamePasswordComboException {
+        for (Account account : Account.accounts) {
+            if (account.getUsername().equals(username) && account.getPassword().equals(password)) {
+                return new Client(account, ipAddress, port);
+            }
+        }
+        throw new InvalidUsernamePasswordComboException("Invalid username/password combo");
     }
 
     public String getUsername() {
@@ -42,6 +51,8 @@ public class Account {
     /**
      *  Takes the accounts defined into the provided JSON file and loads them into
      *  the accounts ArrayList.
+     *
+     *  Will make the program exit with 1 code if file couldn't be loaded
      * @param file The JSON file containing the accounts to load.
      */
     public static void loadAccounts(File file) {
