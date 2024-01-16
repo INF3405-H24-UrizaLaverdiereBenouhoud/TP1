@@ -75,7 +75,7 @@ public class Client {
             }
         catch (Exception e)
         {
-            e.printStackTrace();
+            System.err.println(e);
         }
         //login
             //enter username

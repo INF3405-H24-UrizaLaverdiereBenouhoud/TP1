@@ -20,19 +20,56 @@ import java.net.Socket;
                     Socket client = server.accept(); //blocs code until connection request is made
 
                     //    Should create switch case with with Byte readByte(); of DataInputStream
-
+                    DataInput message = new DataInputStream(client.getInputStream());
+                    interpretStreamContent(message);
 
                    //should send confirmation message is received
-                 readMessage(client);
+
                 }
             } finally {
                 server.close();
             }
         }
-
-        private static void readMessage(Socket client) throws IOException  // not sure if this is right
+        private static void interpretStreamContent(DataInput in) throws IOException
         {
-            DataInput message = new DataInputStream(client.getInputStream());
+
+            try {
+                Byte task = in.readByte();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            switch (readFirstByte(in))
+            {
+                case 0: //login
+
+                    break;
+
+                case 1: // send recent history
+                    break;
+
+                case 2: // client sent message
+                    readMessage(in);
+                    break;
+            }
+        }
+
+        private static Byte readFirstByte(DataInput in)
+        {
+            try {
+                return in.readByte();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private static void readMessage(DataInput message) throws IOException  // not sure if this is right
+        {
+
+            switch (message.readUnsignedByte())
+            {
+            }
+
+
             System.out.println(message.readUTF());
         }
 
