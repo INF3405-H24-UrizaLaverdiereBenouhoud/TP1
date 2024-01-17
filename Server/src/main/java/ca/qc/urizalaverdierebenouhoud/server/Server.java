@@ -42,7 +42,9 @@ import java.net.Socket;
                     break;
 
                 case 2: // client sent message
-                    System.out.println("task 2 initiated");
+                    System.out.println("task 2 initiated"); //TODO: enlever avant remise
+                    // Stays here for debugging pupopose prcq le serveur fonctionne pour 1 personne
+                    // mais pas encore avec plusieur clients
                     readMessage(in);
                     break;
                 default:
@@ -75,7 +77,7 @@ import java.net.Socket;
                  System.out.format("The server is running on %s:%d %n", serverAddress, serverPort);
              }
             catch (IOException e){
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }

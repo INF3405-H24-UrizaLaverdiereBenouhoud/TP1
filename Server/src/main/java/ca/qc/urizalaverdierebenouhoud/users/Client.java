@@ -1,7 +1,9 @@
 package ca.qc.urizalaverdierebenouhoud.users;
 
+import javax.imageio.IIOException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Socket;
 import java.util.Scanner;
@@ -10,6 +12,8 @@ public class Client {
     private String username;
     private Inet4Address ipAddress;
     private int port;
+    private static String TestipAddress = "192.168.100.133";
+    private static int TestPort = 5003;
 
     public String getUsername() {
         return username;
@@ -59,8 +63,6 @@ public class Client {
     public static void main(String[] args)
     {
         try {
-           String TestipAddress = "192.168.100.133";
-           int TestPort = 5003;
 
             Scanner scanner = new Scanner(System.in);
             //login
@@ -71,24 +73,66 @@ public class Client {
             //validation
                 //if user does not exist add to DB
 
+            //Display historic
+
             //send message TODO: need to implement return from server
-            while(true) {
-                Socket client = new Socket(TestipAddress,TestPort);
-                DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                String message = scanner.nextLine();
-                out.writeByte(2);
-                out.writeUTF(message);
-                out.flush(); // sends data
-                client.close();
-            }
+          chatRoomFunctionalities(scanner);
             }
         catch (Exception e)
         {
-            System.err.println(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void chatRoomFunctionalities(Scanner scanner)
+    {
+        while(true) {
+            try {
+            Socket client = new Socket(TestipAddress,TestPort);
+            DataOutputStream out = new DataOutputStream(client.getOutputStream());
+            String message = scanner.nextLine();
+            sendMessageToChat(out,message);
+            client.close();} catch (IOException e){
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+
+    ////////////////////////////////////////////////////////
+    //Encodage pour envoi
+    ////////////////////////////////////////////////////////
+    // Task methods in Main
+    /////////////////////////////////////
+    private static void sendMessageToChat(DataOutputStream out, String message)
+    {
+        encodeAndSend(2,out, message);
+    }
+    /////////////////////////////////////
+    // called methods for sending
+    /////////////////////////////////////
+    private static void encodeAndSend(int task, DataOutputStream out, String message)
+    {
+        try {
+            out.writeByte(task);
+            sendMessage(out,message);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+    private static void sendMessage (DataOutputStream out,String message)
+    {
+        try {
+            out.writeUTF(message);
+            out.flush(); // sends data
+        } catch (IOException  e)
+        {
+            throw new RuntimeException(e);
         }
 
-        //can send messages
-
     }
+
 
 }
