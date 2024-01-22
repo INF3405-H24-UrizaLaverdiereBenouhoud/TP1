@@ -2,6 +2,7 @@ package ca.qc.urizalaverdierebenouhoud.users;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -10,13 +11,16 @@ public class MainClient {
     private static String TestipAddress = "192.168.100.133";
     private static int TestPort = 5003;
 
-    private static Client client;
+    private static Client baseClient;
 
 
     public static void main(String[] args)
     {
         try {
 
+            Inet4Address address = (Inet4Address) Inet4Address.getByName(TestipAddress);
+            Account account = new Account("dummy account", "dummy");
+            baseClient = new Client(account,address, TestPort);
             Scanner scanner = new Scanner(System.in);
             //login
             //enter username
@@ -45,7 +49,7 @@ public class MainClient {
     {
         while(true) {
             try {
-                Socket client = new Socket(TestipAddress,TestPort);
+                Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort());
                 DataOutputStream out = new DataOutputStream(client.getOutputStream());
                 String message = scanner.nextLine();
                 sendMessageToChat(out,message);
