@@ -18,9 +18,8 @@ public class MainClient {
     {
         try {
 
-            Inet4Address address = (Inet4Address) Inet4Address.getByName(TestipAddress);
-            Account account = new Account("dummy account", "dummy");
-            baseClient = new Client(account,address, TestPort);
+
+
             Scanner scanner = new Scanner(System.in);
             //login
             //enter username
@@ -28,6 +27,9 @@ public class MainClient {
             //enter password
 
             //validation
+            Inet4Address address = (Inet4Address) Inet4Address.getByName(TestipAddress);
+            Account account = new Account("dummy account", "dummy");
+            baseClient = new Client(account,address, TestPort);
             //if user does not exist add to DB
 
             //Display historic
