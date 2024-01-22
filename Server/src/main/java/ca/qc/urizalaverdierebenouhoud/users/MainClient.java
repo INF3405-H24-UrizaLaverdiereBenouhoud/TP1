@@ -21,13 +21,16 @@ public class MainClient {
 
 
             Scanner scanner = new Scanner(System.in);
+            System.out.println("Provide IP:");
+              String ip = scanner.nextLine();
+
             //login
             //enter username
 
             //enter password
 
             //validation
-            Inet4Address address = (Inet4Address) Inet4Address.getByName(TestipAddress);
+            Inet4Address address = (Inet4Address) Inet4Address.getByName(ip);
             Account account = new Account("dummy account", "dummy");
             baseClient = new Client(account,address, TestPort);
             //if user does not exist add to DB
