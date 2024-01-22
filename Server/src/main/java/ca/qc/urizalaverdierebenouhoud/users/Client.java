@@ -1,11 +1,18 @@
 package ca.qc.urizalaverdierebenouhoud.users;
 
+import javax.imageio.IIOException;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Inet4Address;
+import java.net.Socket;
+import java.util.Scanner;
 
 public class Client {
     private String username;
     private Inet4Address ipAddress;
     private int port;
+
 
     public String getUsername() {
         return username;
@@ -51,4 +58,8 @@ public class Client {
         this.ipAddress = ipAddress;
         this.port = port;
     }
+
+
+
+
 }
