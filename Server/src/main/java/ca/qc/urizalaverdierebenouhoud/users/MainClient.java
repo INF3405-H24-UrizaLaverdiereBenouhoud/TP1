@@ -50,12 +50,15 @@ public class MainClient {
     private static void chatRoomFunctionalities(Scanner scanner)
     {
         while(true) {
-            try {
+            try
+            {
                 Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort());
                 DataOutputStream out = new DataOutputStream(client.getOutputStream());
                 String message = scanner.nextLine();
                 sendMessageToChat(out,message);
-                client.close();} catch (IOException e){
+                client.close();
+            }
+            catch (IOException e){
                 throw new RuntimeException(e);
             }
         }
