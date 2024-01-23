@@ -26,7 +26,9 @@ import java.net.Socket;
                    //should send confirmation message is received
 
                 }
-            } finally {
+            }
+            catch (IOException e){}
+            finally {
                 server.close();
             }
         }
@@ -34,7 +36,7 @@ import java.net.Socket;
         {
             switch ( (int)readFirstByte(in))
             {
-                case 0: //login
+                case 3: //login
 
                     break;
 
@@ -48,7 +50,7 @@ import java.net.Socket;
                     readMessage(in);
                     break;
                 default:
-                    System.out.println("No task associated with Byte");
+                    System.out.println("No task associated with Byte or user disconnected");
             }
         }
 
@@ -59,7 +61,8 @@ import java.net.Socket;
                 System.out.println("task type: "+ task);
                 return task;
             } catch (IOException e) {
-                throw new RuntimeException(e);
+               // throw new RuntimeException(e);
+                return 0;
             }
         }
 
@@ -77,7 +80,7 @@ import java.net.Socket;
                  System.out.format("The server is running on %s:%d %n", serverAddress, serverPort);
              }
             catch (IOException e){
-                throw new RuntimeException(e);
+                //throw new RuntimeException(e);
             }
         }
     }
