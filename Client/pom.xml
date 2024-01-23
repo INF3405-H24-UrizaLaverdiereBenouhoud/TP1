@@ -32,7 +32,6 @@
                 <configuration>
                     <finalName>INF3405-Client</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
-
                     <archive>
                         <manifest>
                             <mainClass>ca.qc.urizalaverdierebenouhoud.MainClient</mainClass>

@@ -1,4 +1,4 @@
-package ca.qc.urizaleverdierebenouhoud;
+package ca.qc.urizalaverdierebenouhoud;
 
 import ca.qc.urizalaverdierebenouhoud.users.Account;
 import ca.qc.urizalaverdierebenouhoud.users.Client;
