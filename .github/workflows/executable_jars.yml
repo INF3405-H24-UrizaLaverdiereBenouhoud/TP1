@@ -21,4 +21,5 @@ jobs:
         with:
           name: jar-files
           path: |
-            target/*.jar
+            Server/target/*.jar
+            Client/target/*.jar
