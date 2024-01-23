@@ -21,5 +21,5 @@ jobs:
         with:
           name: jar-files
           path: |
-            Server/target/*.jar
-            Client/target/*.jar
+            Server/target/INF3405-Server.jar
+            Client/target/INF3405-Client.jar
