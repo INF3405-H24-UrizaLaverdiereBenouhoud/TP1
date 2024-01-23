@@ -30,11 +30,16 @@ public class Account {
      */
     public static Client login(String username, String password, Inet4Address ipAddress, int port) throws InvalidUsernamePasswordComboException {
         for (Account account : Account.accounts) {
-            if (account.getUsername().equals(username) && account.getPassword().equals(password)) {
-                return new Client(account, ipAddress, port);
+            if (account.getUsername().equals(username)) {
+                if (account.getPassword().equals(password)) {
+                    return new Client(account, ipAddress, port);
+                }
+                else {
+                    throw new InvalidUsernamePasswordComboException("Invalid username/password combo");
+                }
             }
         }
-        throw new InvalidUsernamePasswordComboException("Invalid username/password combo");
+        return new Client(new Account(username, password), ipAddress, port);
     }
 
     public String getUsername() {
