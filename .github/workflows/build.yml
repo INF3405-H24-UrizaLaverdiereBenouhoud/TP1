@@ -1,6 +1,0 @@
-name: Building Java project with Oracle JDK 20
-
-on:
-  push:
-
-jobs:
