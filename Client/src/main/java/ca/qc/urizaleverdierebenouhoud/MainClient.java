@@ -1,4 +1,7 @@
-package ca.qc.urizalaverdierebenouhoud.users;
+package ca.qc.urizaleverdierebenouhoud;
+
+import ca.qc.urizalaverdierebenouhoud.users.Account;
+import ca.qc.urizalaverdierebenouhoud.users.Client;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
