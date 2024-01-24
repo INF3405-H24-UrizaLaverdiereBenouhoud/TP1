@@ -17,40 +17,23 @@ public class ClientHandler extends Thread {
         this.client = socket;
         this.clientNumber = clientNumber;
         System.out.println("New connection with client#" + clientNumber + " at" + socket);
-
     }
-    public void run() {
-        //connectInfo();
 
+    public void run() {
+//sleep
             while (true) {
                 try {
+                    Thread.sleep(500);
                 DataInputStream message = new DataInputStream(client.getInputStream());
-                //System.out.println(dis.readUTF());
                 interpretStreamContent(message);
                 if(!client.isConnected())
                     client.close();
             }
-                catch (IOException e) {
-
+                catch (IOException e) {} catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-        }
-
-    }
-
-    private void connectInfo() {
-        try {
-            DataOutputStream out = new DataOutputStream(client.getOutputStream());
-            out.writeUTF("Hello from server - you are client#" + clientNumber);
-        } catch (IOException e) {
-            System.out.println("Error handling client# " + clientNumber + ": " + e);
-        } finally {
-            try {
-                client.close();
-            } catch (IOException e) {
-                System.out.println("Couldn't close a socket, what's going on?");
             }
-            System.out.println("Connection with client# " + clientNumber + " closed");
-        }
+
     }
 
     private static void interpretStreamContent(DataInput in) throws IOException
