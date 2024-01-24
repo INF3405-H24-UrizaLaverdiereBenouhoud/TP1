@@ -27,16 +27,26 @@ public class MainClient {
             System.out.println("Provide IP:");
               String ip = scanner.nextLine();
 
-            //login
-            //enter username
 
-            //enter password
+            //login
+            System.out.println("Enter username :");
+            String username = scanner.nextLine();
+
+            System.out.println("Provide password:");
+            String password = scanner.nextLine();
+
+            //System.out.println("Provide IP:");
+            //int port = Integer.parseInt(scanner.nextLine());
 
             //validation
             Inet4Address address = (Inet4Address) Inet4Address.getByName(ip);
-            Account account = new Account("dummy account", "dummy");
-            baseClient = new Client(account,address, TestPort);
-            //if user does not exist add to DB
+            Account account = new Account(username, password);
+            baseClient = new Client(account, address, TestPort);
+
+            //send login info to server (account/client)
+            Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort());
+            DataOutputStream out = new DataOutputStream(client.getOutputStream());
+            encodeAndSend(3, out, account.toString());
 
             //Display historic
 

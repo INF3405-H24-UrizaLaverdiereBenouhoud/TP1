@@ -1,12 +1,11 @@
 package ca.qc.urizalaverdierebenouhoud;
 
-import java.io.*;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import ca.qc.urizalaverdierebenouhoud.users.Account;
 
-    public class Server {
+import java.io.*;
+import java.net.*;
+
+public class Server {
         private static ServerSocket server;
 
         private static String serverAddress ="0.0.0.0";  //TODO: allow user to change IP at connection
@@ -47,6 +46,12 @@ import java.net.Socket;
                     // mais pas encore avec plusieur clients
                     readMessage(in);
                     break;
+
+                case 3:
+                    //login();
+                    //account.login(username, password, address, TestPort);
+
+
                 default:
                     System.out.println("No task associated with Byte");
             }
@@ -81,3 +86,4 @@ import java.net.Socket;
             }
         }
     }
+
