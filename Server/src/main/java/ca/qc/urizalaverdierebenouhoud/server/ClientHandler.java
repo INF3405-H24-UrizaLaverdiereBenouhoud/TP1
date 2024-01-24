@@ -27,6 +27,8 @@ public class ClientHandler extends Thread {
                 DataInputStream message = new DataInputStream(client.getInputStream());
                 //System.out.println(dis.readUTF());
                 interpretStreamContent(message);
+                if(!client.isConnected())
+                    client.close();
             }
                 catch (IOException e) {
 
