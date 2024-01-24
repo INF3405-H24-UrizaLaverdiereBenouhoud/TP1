@@ -42,7 +42,7 @@ public class MainClient {
         }
         catch (Exception e)
         {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
         }
     }
 
@@ -62,7 +62,7 @@ public class MainClient {
                 client.close();
             }
             catch (IOException e){
-                throw new RuntimeException(e);
+               // throw new RuntimeException(e);
             }
         }
     }
@@ -88,7 +88,7 @@ public class MainClient {
         }
         catch (IOException e)
         {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
         }
     }
     private static void sendMessage (DataOutputStream out,String message)
@@ -98,7 +98,7 @@ public class MainClient {
             out.flush(); // sends data
         } catch (IOException  e)
         {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
         }
 
     }
