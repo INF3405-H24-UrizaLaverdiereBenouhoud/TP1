@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class Server {
         private static ServerSocket server;
 
-        private static String serverAddress ="127.0.0.1";  //TODO: allow user to change IP at connection
+        private static String serverAddress ="10.200.14.166";  //TODO: allow user to change IP at connection
         private static int serverPort = 5003;
         public static void main(String[] args) throws Exception {
           server = new ServerSocket(); // initialize server

@@ -20,13 +20,17 @@ public class ClientHandler extends Thread {
 
     }
     public void run() {
-        connectInfo();
+        //connectInfo();
 
             while (true) {
                 try {
-                DataInput message = new DataInputStream(client.getInputStream());
+                DataInputStream message = new DataInputStream(client.getInputStream());
+                //System.out.println(dis.readUTF());
                 interpretStreamContent(message);
-            }   catch (IOException e) {}
+            }
+                catch (IOException e) {
+
+                }
         }
 
     }
@@ -65,7 +69,7 @@ public class ClientHandler extends Thread {
                 readMessage(in);
                 break;
             default:
-                System.out.println("No task associated with Byte or user disconnected");
+                //System.out.println("No task associated with Byte or user disconnected");
         }
     }
 
