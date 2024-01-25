@@ -26,7 +26,6 @@ public class ClientHandler extends Thread {
                 throw new RuntimeException(e);
             }
         }
-
     }
 
     private static void interpretStreamContent(DataInput in) throws IOException {
@@ -38,7 +37,6 @@ public class ClientHandler extends Thread {
             } // send recent history
             case 2 -> { // client sent message
                 System.out.println("task 2 initiated"); //TODO: enlever avant remise
-
                 // Stays here for debugging pupopose prcq le serveur fonctionne pour 1 personne
                 // mais pas encore avec plusieur clients
                 readMessage(in);
@@ -64,6 +62,4 @@ public class ClientHandler extends Thread {
     {
         System.out.println(message.readUTF());
     }
-
-
 }

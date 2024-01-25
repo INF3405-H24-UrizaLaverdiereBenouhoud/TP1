@@ -16,7 +16,7 @@ public class Server {
         try (server) {
             startServer(server);
             int number = 0;
-            while (true) {
+            while (!server.isClosed()) {
                 Socket client = server.accept(); //blocs code until connection request is made
                 ClientHandler handler = new ClientHandler(client, number++);
                 handler.start();
