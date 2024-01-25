@@ -8,8 +8,8 @@ import java.util.Scanner;
 
 public class MainClient {
 
-    private static String TestipAddress = "192.168.100.133";
-    private static int TestPort = 5003;
+   // TestipAddress = "192.168.100.133";
+    private static final int TestPort = 5003;
 
     private static Client baseClient;
 
@@ -51,22 +51,19 @@ public class MainClient {
     //Milestone in connection
     ////////////////////////////////////////////////////////
     private static void chatRoomFunctionalities(Scanner scanner)
-    {    try
     {
-        Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort());
-        while(true) {
-
-
-                DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                String message = scanner.nextLine();
-                sendMessageToChat(out,message);
-
-            }
+        try(Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort()))
+     {
+         while (client.isConnected()) {
+             DataOutputStream out = new DataOutputStream(client.getOutputStream());
+             String message = scanner.nextLine();
+             sendMessageToChat(out, message);
+         }
         //client.close
         }
-                    catch (IOException e){
+        catch (IOException e){
 
-        // throw new RuntimeException(e);
+        throw new RuntimeException(e);
 
     }
 

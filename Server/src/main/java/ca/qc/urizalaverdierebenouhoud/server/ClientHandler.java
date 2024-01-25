@@ -2,71 +2,61 @@ package ca.qc.urizalaverdierebenouhoud.server;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ClientHandler extends Thread {
     // vient des notes de cours par vrm utile, est que on devrait l'enlemver?
-    private Socket client;
-    private int clientNumber;
+    private final Socket client;
+
     public ClientHandler(Socket socket, int clientNumber) {
         this.client = socket;
-        this.clientNumber = clientNumber;
         System.out.println("New connection with client#" + clientNumber + " at" + socket);
     }
 
     public void run() {
-//sleep
-            while (true) {
-                try {
-                    Thread.sleep(500);
+        while (client.isConnected()) {
+            try {
+                Thread.sleep(500);
                 DataInputStream message = new DataInputStream(client.getInputStream());
                 interpretStreamContent(message);
-                if(!client.isConnected())
+                if (!client.isConnected())
                     client.close();
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
             }
-                catch (IOException e) {} catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+        }
 
     }
 
-    private static void interpretStreamContent(DataInput in) throws IOException
-    {
-        switch ( (int)readFirstByte(in))
-        {
-            case 3: //login
+    private static void interpretStreamContent(DataInput in) throws IOException {
+        switch ((int) readFirstByte(in)) {
+            case 3 -> {
+            } //login
 
-                break;
-
-            case 1: // send recent history
-                break;
-
-            case 2: // client sent message
+            case 1 -> {
+            } // send recent history
+            case 2 -> { // client sent message
                 System.out.println("task 2 initiated"); //TODO: enlever avant remise
+
                 // Stays here for debugging pupopose prcq le serveur fonctionne pour 1 personne
                 // mais pas encore avec plusieur clients
                 readMessage(in);
-                break;
-            default:
-                //System.out.println("No task associated with Byte or user disconnected");
+            }
+            default -> {
+            }
+            //System.out.println("No task associated with Byte or user disconnected");
         }
     }
 
-    private static Byte readFirstByte(DataInput in)
-    {
+    private static Byte readFirstByte(DataInput in) {
         try {
             Byte task = in.readByte();
-            System.out.println("task type: "+ task);
+            System.out.println("task type: " + task);
             return task;
         } catch (IOException e) {
-            // throw new RuntimeException(e);
-            return 0;
+            throw new RuntimeException(e);
+            //return 0;
         }
     }
 
@@ -74,7 +64,6 @@ public class ClientHandler extends Thread {
     {
         System.out.println(message.readUTF());
     }
-
 
 
 }
