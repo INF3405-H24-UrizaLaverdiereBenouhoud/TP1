@@ -23,7 +23,7 @@ public class ClientHandler extends Thread {
                 if (!client.isConnected())
                     client.close();
             } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
+                System.out.println("client disconected");
             }
         }
     }
@@ -53,8 +53,8 @@ public class ClientHandler extends Thread {
             System.out.println("task type: " + task);
             return task;
         } catch (IOException e) {
-            throw new RuntimeException(e);
-            //return 0;
+            //throw new RuntimeException(e);
+            return 0;
         }
     }
 
