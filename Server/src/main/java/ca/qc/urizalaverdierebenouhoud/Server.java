@@ -11,6 +11,7 @@ import java.net.Socket;
 
         private static String serverAddress ="0.0.0.0";  //TODO: allow user to change IP at connection
         private static int serverPort = 5003;
+
         public static void main(String[] args) throws Exception {
           server = new ServerSocket(); // initialize server
             startServer(server);
