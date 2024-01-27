@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ClientHandler extends Thread {
-    // vient des notes de cours par vrm utile, est que on devrait l'enlemver?
     private final Socket client;
 
     public ClientHandler(Socket socket, int clientNumber) {
