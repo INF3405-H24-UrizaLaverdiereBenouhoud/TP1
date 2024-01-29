@@ -1,5 +1,4 @@
 package ca.qc.urizalaverdierebenouhoud.server;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -7,12 +6,12 @@ import java.util.ArrayList;
 public class ClientHandler extends Thread {
     private final Socket client;
     public static ArrayList<ClientHandler> handlers = new ArrayList<>();
-
+  
     public ClientHandler(Socket socket, int clientNumber) {
         this.client = socket;
         System.out.println("New connection with client#" + clientNumber + " at" + socket);
     }
-
+  
     public void run() {
         handlers.add(this);
         while (client.isConnected()) {
@@ -32,7 +31,6 @@ public class ClientHandler extends Thread {
         switch ((int) readFirstByte(in)) {
             case 3 -> {
             } //login
-
             case 1 -> {
             } // send recent history
             case 2 -> { // client sent message
