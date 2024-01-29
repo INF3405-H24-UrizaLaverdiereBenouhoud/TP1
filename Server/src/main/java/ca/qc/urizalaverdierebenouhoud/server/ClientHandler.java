@@ -2,18 +2,22 @@ package ca.qc.urizalaverdierebenouhoud.server;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ClientHandler extends Thread {
     private final Socket client;
-
+    public static ArrayList<ClientHandler> handlers = new ArrayList<>();
     public ClientHandler(Socket socket, int clientNumber) {
         this.client = socket;
         System.out.println("New connection with client#" + clientNumber + " at" + socket);
     }
 
     public void run() {
+       handlers.add(this);
+
         while (client.isConnected()) {
             try {
                 Thread.sleep(500);
@@ -27,7 +31,7 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private static void interpretStreamContent(DataInput in) throws IOException {
+    private  void interpretStreamContent(DataInput in) throws IOException {
         switch ((int) readFirstByte(in)) {
             case 3 -> {
             } //login
@@ -57,8 +61,16 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private static void readMessage(DataInput message) throws IOException  // not sure if this is right
+    private  void readMessage(DataInput message) throws IOException  // not sure if this is right
     {
         System.out.println(message.readUTF());
+        for (ClientHandler handler: handlers) {
+                if(handler!=this)
+                {
+                    DataOutputStream out = (DataOutputStream) client.getOutputStream();
+                    out.writeUTF(message.readUTF());
+                    out.flush();
+                }
+        }
     }
 }
