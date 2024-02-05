@@ -1,10 +1,14 @@
 package ca.qc.urizalaverdierebenouhoud.users;
 
+import com.google.gson.JsonObject;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Scanner;
+import org.json.JSONObject;
 
 public class MainClient {
 
@@ -24,7 +28,6 @@ public class MainClient {
             System.out.println("Provide IP:");
               String ip = scanner.nextLine();
 
-
             //login
             System.out.println("Enter username :");
             String username = scanner.nextLine();
@@ -40,12 +43,11 @@ public class MainClient {
             Account account = new Account(username, password);
             baseClient = new Client(account, address, TestPort);
 
-            //send login info to server (account/client)
+            //send login info to server (account/client)9
             Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort());
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
-            encodeAndSend(3, out, username + " : " + password);
-
-
+            String[] loginInfo = { username, password, ip, Integer.toString(TestPort) };
+            encodeAndSend(3, out, Arrays.toString(loginInfo));
 
             //Display historic
 

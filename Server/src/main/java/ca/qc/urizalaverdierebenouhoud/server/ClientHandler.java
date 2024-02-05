@@ -1,9 +1,16 @@
 package ca.qc.urizalaverdierebenouhoud.server;
 
+import ca.qc.urizalaverdierebenouhoud.users.Account;
+import ca.qc.urizalaverdierebenouhoud.users.InvalidUsernamePasswordComboException;
+import ca.qc.urizalaverdierebenouhoud.users.MainClient;
+
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.InetAddress;
+import java.net.Inet4Address;
+
 
 public class ClientHandler extends Thread {
     private final Socket client;
@@ -21,17 +28,20 @@ public class ClientHandler extends Thread {
                 interpretStreamContent(message);
                 if (!client.isConnected())
                     client.close();
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException | InterruptedException | InvalidUsernamePasswordComboException e) {
                 System.out.println("client disconected");
             }
         }
     }
 
-    private static void interpretStreamContent(DataInput in) throws IOException {
+    private static void interpretStreamContent(DataInput in) throws IOException, InvalidUsernamePasswordComboException {
         switch ((int) readFirstByte(in)) {
             case 3 -> {
+                String[] loginInfo = in.readUTF().split(" ");
+                InetAddress ipAddress = Inet4Address.getByName(loginInfo[3]);
+                Inet4Address ip = (Inet4Address) ipAddress;
+                Account.login(loginInfo[0], loginInfo[1], ip , Integer.parseInt(loginInfo[4]));
             } //login
-
             case 1 -> {
             } // send recent history
             case 2 -> { // client sent message
