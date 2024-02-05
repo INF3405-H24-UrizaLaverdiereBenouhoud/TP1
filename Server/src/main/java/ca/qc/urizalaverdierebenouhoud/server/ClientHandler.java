@@ -22,6 +22,7 @@ public class ClientHandler extends Thread {
                 if (!client.isConnected())
                     client.close();
             } catch (IOException | InterruptedException e) {
+                System.out.println(e);
                 System.out.println("client disconected");
             }
         }

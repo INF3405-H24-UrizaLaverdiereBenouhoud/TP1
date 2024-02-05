@@ -97,7 +97,10 @@ public class MainClient {
 
     private static void sendMessage(DataOutputStream out, String message) {
         try {
-            out.writeUTF(message);
+            if(message.isEmpty())
+                return;
+            String stringToSend = "["+baseClient.getUsername()+"|"+ baseClient.getIpAddress().toString()+"]: " +message;
+            out.writeUTF(stringToSend);
             out.flush(); // sends data
         } catch (IOException e) {
             //throw new RuntimeException(e);
