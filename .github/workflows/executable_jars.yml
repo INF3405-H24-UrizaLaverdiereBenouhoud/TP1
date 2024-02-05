@@ -1,0 +1,25 @@
+name: Building executable .jar files
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-jars:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up openJDK 20
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: 20
+      - name: Build with Maven
+        run: mvn -B clean package --file pom.xml
+      - name: Upload jar files
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar-files
+          path: |
+            Server/target/INF3405-Server.jar
+            Client/target/INF3405-Client.jar

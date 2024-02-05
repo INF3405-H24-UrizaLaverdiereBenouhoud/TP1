@@ -1,7 +1,4 @@
-package ca.qc.urizaleverdierebenouhoud;
-
-import ca.qc.urizalaverdierebenouhoud.users.Account;
-import ca.qc.urizalaverdierebenouhoud.users.Client;
+package ca.qc.urizalaverdierebenouhoud.users;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,8 +8,8 @@ import java.util.Scanner;
 
 public class MainClient {
 
-    private static String TestipAddress = "192.168.100.133";
-    private static int TestPort = 5003;
+   // TestipAddress = "192.168.100.133";
+    private static final int TestPort = 5003;
 
     private static Client baseClient;
 
@@ -57,7 +54,7 @@ public class MainClient {
         }
         catch (Exception e)
         {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
         }
     }
 
@@ -67,19 +64,21 @@ public class MainClient {
     ////////////////////////////////////////////////////////
     private static void chatRoomFunctionalities(Scanner scanner)
     {
-        while(true) {
-            try
-            {
-                Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort());
-                DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                String message = scanner.nextLine();
-                sendMessageToChat(out,message);
-                client.close();
-            }
-            catch (IOException e){
-                throw new RuntimeException(e);
-            }
+        try(Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort()))
+     {
+         while (client.isConnected()) {
+             DataOutputStream out = new DataOutputStream(client.getOutputStream());
+             String message = scanner.nextLine();
+             sendMessageToChat(out, message);
+         }
+        //client.close
         }
+        catch (IOException e){
+
+        throw new RuntimeException(e);
+
+    }
+
     }
 
 
@@ -103,7 +102,7 @@ public class MainClient {
         }
         catch (IOException e)
         {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
         }
     }
     private static void sendMessage (DataOutputStream out,String message)
@@ -113,7 +112,7 @@ public class MainClient {
             out.flush(); // sends data
         } catch (IOException  e)
         {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
         }
 
     }
