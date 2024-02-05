@@ -1,15 +1,17 @@
 package ca.qc.urizalaverdierebenouhoud.users;
+
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class MainClient {
-   // TestipAddress = "192.168.100.133";
+    // TestipAddress = "192.168.100.133";
     private static final int TestPort = 5003;
 
     private static Client baseClient;
-
 
 
     public static void main(String[] args) {
@@ -26,7 +28,7 @@ public class MainClient {
             //validation
             Inet4Address address = (Inet4Address) Inet4Address.getByName(ip);
             Account account = new Account("dummy account", "dummy");
-            baseClient = new Client(account,address, TestPort);
+            baseClient = new Client(account, address, TestPort);
             //if user does not exist add to DB
 
             //Display historic
@@ -34,12 +36,11 @@ public class MainClient {
             //send message TODO: need to implement return from server
             chatRoomFunctionalities(scanner);
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             //throw new RuntimeException(e);
         }
     }
+
     ////////////////////////////////////////////////////////
     //Milestone in connection
     ////////////////////////////////////////////////////////
@@ -56,6 +57,7 @@ public class MainClient {
             throw new RuntimeException(e);
         }
     }
+
     private static void listen(Socket client) throws IOException {
         new Thread(new Runnable() {
             @Override
@@ -97,9 +99,13 @@ public class MainClient {
 
     private static void sendMessage(DataOutputStream out, String message) {
         try {
-            if(message.isEmpty())
+            if (message.isEmpty())
                 return;
-            String stringToSend = "["+baseClient.getUsername()+"|"+ baseClient.getIpAddress().toString()+"]: " +message;
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            String formattedDate = now.format(formatter);
+            String stringToSend = "[" + baseClient.getUsername() + " - " + baseClient.getIpAddress().toString() + " : "
+                    + baseClient.getPort() + "-" + formattedDate + "]: " + message;
             out.writeUTF(stringToSend);
             out.flush(); // sends data
         } catch (IOException e) {
