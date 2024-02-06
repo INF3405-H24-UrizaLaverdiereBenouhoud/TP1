@@ -30,15 +30,20 @@ public class ClientHandler extends Thread {
     }
 
     private void handleError(Exception e) {
+        System.out.println(e.getMessage());
+        closeClientConnection();
+    }
+
+    private void closeClientConnection() {
         try {
-            System.out.println(e.getMessage());
             isRunning = false;
+            handlers.remove(this);
             client.close();
             System.out.println("client #" + clientNumber + " disconnected");
-            handlers.remove(this);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
+
     }
 
     private void interpretStreamContent(DataInput in) throws IOException {
@@ -51,10 +56,8 @@ public class ClientHandler extends Thread {
                 readMessage(in);
             }
             case 4 -> {
-                client.close();
                 System.out.println("disconnected by will of user");
-                isRunning = false;
-                handlers.remove(this);
+                closeClientConnection();
             } //stop thread
             default -> {
             }
