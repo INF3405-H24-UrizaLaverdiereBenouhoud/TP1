@@ -29,7 +29,7 @@ public class ClientHandler extends Thread {
                 interpretStreamContent(message);
                 if (!client.isConnected())
                     client.close();
-            } catch (IOException | InterruptedException | InvalidUsernamePasswordComboException e) {
+            } catch ( IOException | InterruptedException) {
                 System.out.println("client disconected");
             }
         }
@@ -38,11 +38,15 @@ public class ClientHandler extends Thread {
     private void interpretStreamContent(DataInput in) throws IOException {
         switch ((int) readFirstByte(in)) {
             case 3 -> {
-                System.out.println("hiiiiiiiiiiiiiiiiiiiiiiiiiiii");
-                String[] loginInfo = in.readUTF().split(", ");
-                InetAddress ipAddress = Inet4Address.getByName(loginInfo[3]);
-                Inet4Address ip = (Inet4Address) ipAddress;
-                Account.login(loginInfo[0], loginInfo[1], ip , Integer.parseInt(loginInfo[4]));
+                try {
+                    String[] loginInfo = in.readUTF().split(" : ");
+                    Inet4Address ip = (Inet4Address) client.getInetAddress();
+                    int port  = (int) client.getPort();
+                    Account.login(loginInfo[0], loginInfo[1], ip , port);
+                }
+                catch (Exception e) {
+
+                }
             } //login
             case 1 -> {
             } // send recent history

@@ -102,7 +102,7 @@ public class MainClient {
             //send login info to server (account/client)
             Socket client = new Socket(serverIpAddress, serverPort);
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
-            encodeAndSend(3, out, username + ", " + password + ", " + client.getInetAddress() + ", " + client.getPort());
+            encodeAndSend(3, out, username + " : " + password);
 
             //Display historic
 
