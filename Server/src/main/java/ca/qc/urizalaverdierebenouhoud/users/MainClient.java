@@ -12,7 +12,7 @@ public class MainClient {
     private static final int TestPort = 5003;
 
     private static Client baseClient;
-
+    private static boolean isRunning = true;
 
     public static void main(String[] args) {
         try {
@@ -48,13 +48,20 @@ public class MainClient {
         try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             listen(client);
-            while (client.isConnected()) {
+            while (isRunning) {
                 String message = scanner.nextLine();
+                if(message.equals("exit")) {
+                    isRunning = false;
+                    out.writeByte(4);
+                    out.flush();
+                    client.close();
+                }
+                else {
                 sendMessageToChat(out, message);
-            }
+            }}
             //client.close
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            isRunning = false;
         }
     }
 
@@ -64,13 +71,14 @@ public class MainClient {
             public void run() {
                 BufferedReader in;
                 try {
-                    while (true) {
+                    while (isRunning) {
                         in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                         String message = in.readLine();
-                        System.out.println(message);
+                        if(message != null)
+                           System.out.println(message);
                     }
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                   isRunning = false;
                 }
             }
         }).start();

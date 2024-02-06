@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class ClientHandler extends Thread {
     private final Socket client;
     public static ArrayList<ClientHandler> handlers = new ArrayList<>();
-
+public boolean isRunning = true;
     public ClientHandler(Socket socket, int clientNumber) {
         this.client = socket;
         System.out.println("New connection with client#" + clientNumber + " at" + socket);
@@ -15,7 +15,7 @@ public class ClientHandler extends Thread {
 
     public void run() {
         handlers.add(this);
-        while (client.isConnected()) {
+        while (isRunning) {
             try {
                 Thread.sleep(500);
                 DataInputStream message = new DataInputStream(client.getInputStream());
@@ -23,15 +23,24 @@ public class ClientHandler extends Thread {
 
             } catch (IOException | InterruptedException e) {
                 try {
+                    System.out.println(e);
+                    isRunning = false;
                     client.close();
-                    System.out.println("disconnected");
+                    System.out.println("disconnected1");
                     System.out.println(handlers);
                     handlers.remove(this);
                 } catch (IOException ex) {
+
                     System.out.println(ex);
                 }
             }
         }
+        try {
+            client.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("disconnected2");
     }
 
     private void interpretStreamContent(DataInput in) throws IOException {
@@ -46,6 +55,12 @@ public class ClientHandler extends Thread {
                 // mais pas encore avec plusieur clients
                 readMessage(in);
             }
+            case 4 -> {
+            client.close();
+            System.out.println("disconnected by will of user");
+            isRunning = false;
+            handlers.remove(this);
+            } //stop thread
             default -> {
             }
             //System.out.println("No task associated with Byte or user disconnected");
@@ -66,13 +81,15 @@ public class ClientHandler extends Thread {
     private void readMessage(DataInput message) throws IOException  // not sure if this is right
     {
         String text = message.readUTF();
+        if(text.isEmpty())
+            return;
         System.out.println(text);
-        if (text.equals("exit")) {
-            client.close();
-            System.out.println("disconnected");
-            System.out.println(handlers);
-            handlers.remove(this);
-        }
+//        if (text.equals("exit")) {
+//            client.close();
+//            System.out.println("disconnected");
+//            System.out.println(handlers);
+//            handlers.remove(this);
+//        }
         for (ClientHandler handler : handlers) {
             if (handler.client != this.client) {
                 BufferedWriter out = (new BufferedWriter(new OutputStreamWriter(handler.client.getOutputStream())));
