@@ -1,4 +1,5 @@
 package ca.qc.urizalaverdierebenouhoud.server;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -6,12 +7,12 @@ import java.util.ArrayList;
 public class ClientHandler extends Thread {
     private final Socket client;
     public static ArrayList<ClientHandler> handlers = new ArrayList<>();
-  
+
     public ClientHandler(Socket socket, int clientNumber) {
         this.client = socket;
         System.out.println("New connection with client#" + clientNumber + " at" + socket);
     }
-  
+
     public void run() {
         handlers.add(this);
         while (client.isConnected()) {
@@ -19,11 +20,16 @@ public class ClientHandler extends Thread {
                 Thread.sleep(500);
                 DataInputStream message = new DataInputStream(client.getInputStream());
                 interpretStreamContent(message);
-                if (!client.isConnected())
-                    client.close();
+
             } catch (IOException | InterruptedException e) {
-                System.out.println(e);
-                System.out.println("client disconected");
+                try {
+                    client.close();
+                    System.out.println("disconnected");
+                    System.out.println(handlers);
+                    handlers.remove(this);
+                } catch (IOException ex) {
+                    System.out.println(ex);
+                }
             }
         }
     }
@@ -61,6 +67,12 @@ public class ClientHandler extends Thread {
     {
         String text = message.readUTF();
         System.out.println(text);
+        if (text.equals("exit")) {
+            client.close();
+            System.out.println("disconnected");
+            System.out.println(handlers);
+            handlers.remove(this);
+        }
         for (ClientHandler handler : handlers) {
             if (handler.client != this.client) {
                 BufferedWriter out = (new BufferedWriter(new OutputStreamWriter(handler.client.getOutputStream())));
