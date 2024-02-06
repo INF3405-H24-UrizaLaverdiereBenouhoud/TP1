@@ -35,6 +35,7 @@ public class ClientHandler extends Thread {
     }
 
     private static void interpretStreamContent(DataInput in) throws IOException, InvalidUsernamePasswordComboException {
+        System.out.print(in.readUTF());
         switch ((int) readFirstByte(in)) {
             case 3 -> {
                 String[] loginInfo = in.readUTF().split(", ");

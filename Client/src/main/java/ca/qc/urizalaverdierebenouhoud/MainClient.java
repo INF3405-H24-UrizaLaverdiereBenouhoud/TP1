@@ -88,25 +88,26 @@ public class MainClient {
     public static void main(String[] args) throws IOException {
         InetAddress serverIpAddress = promptForIpAddress();
         int serverPort = promptForPort();
-
         try {
-
             Scanner scanner = new Scanner(System.in);
 
             //login
-            //enter username
+            System.out.println("Enter username :");
+            String username = scanner.nextLine();
 
-            //enter password
+            System.out.println("Provide password:");
+            String password = scanner.nextLine();
 
             //validation
-            Account account = new Account("dummy account", "dummy");
-            baseClient = new Client(account, (Inet4Address) serverIpAddress, serverPort);
-            //if user does not exist add to DB
+            //send login info to server (account/client)
+            Socket client = new Socket(serverIpAddress, serverPort);
+            DataOutputStream out = new DataOutputStream(client.getOutputStream());
+            encodeAndSend(3, out, username + ", " + password + ", " + client.getInetAddress() + ", " + client.getPort());
 
             //Display historic
 
             //send message TODO: need to implement return from server
-            chatRoomFunctionalities(scanner);
+            //chatRoomFunctionalities(scanner);
         }
         catch (Exception e)
         {
