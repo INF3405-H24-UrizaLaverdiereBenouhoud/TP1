@@ -35,9 +35,9 @@ public class ClientHandler extends Thread {
     }
 
     private static void interpretStreamContent(DataInput in) throws IOException, InvalidUsernamePasswordComboException {
-        System.out.print(in.readUTF());
         switch ((int) readFirstByte(in)) {
             case 3 -> {
+                System.out.println("hiiiiiiiiiiiiiiiiiiiiiiiiiiii");
                 String[] loginInfo = in.readUTF().split(", ");
                 InetAddress ipAddress = Inet4Address.getByName(loginInfo[3]);
                 Inet4Address ip = (Inet4Address) ipAddress;
