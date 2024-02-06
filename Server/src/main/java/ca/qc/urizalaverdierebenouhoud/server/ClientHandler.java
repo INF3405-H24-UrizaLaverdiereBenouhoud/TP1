@@ -1,5 +1,4 @@
 package ca.qc.urizalaverdierebenouhoud.server;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -13,9 +12,8 @@ public class ClientHandler extends Thread {
     public ClientHandler(Socket socket, int clientNumber) {
         this.client = socket;
         System.out.println("New connection with client#" + clientNumber + " at" + socket);
-        this.clientNumber = clientNumber;
     }
-
+  
     public void run() {
         handlers.add(this);
         while (isRunning) {
@@ -43,7 +41,6 @@ public class ClientHandler extends Thread {
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
-
     }
 
     private void interpretStreamContent(DataInput in) throws IOException {
