@@ -57,6 +57,7 @@ public class MainClient {
                     client.close();
                 }
                 else {
+                    if((!message.isEmpty())&&message.length()<=200)
                 sendMessageToChat(out, message);
             }}
             //client.close
@@ -89,20 +90,16 @@ public class MainClient {
     ////////////////////////////////////////////////////////
     // Task methods in Main
     /////////////////////////////////////
-    private static void sendMessageToChat(DataOutputStream out, String message) {
+    private static void sendMessageToChat(DataOutputStream out, String message) throws IOException {
         encodeAndSend(2, out, message);
     }
 
     /////////////////////////////////////
     // called methods for sending
     /////////////////////////////////////
-    private static void encodeAndSend(int task, DataOutputStream out, String message) {
-        try {
+    private static void encodeAndSend(int task, DataOutputStream out, String message) throws IOException {
             out.writeByte(task);
             sendMessage(out, message);
-        } catch (IOException e) {
-            //throw new RuntimeException(e);
-        }
     }
 
     private static void sendMessage(DataOutputStream out, String message) {
@@ -110,14 +107,16 @@ public class MainClient {
             if (message.isEmpty())
                 return;
             LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy '@' HH:mm:ss");
             String formattedDate = now.format(formatter);
             String stringToSend = "[" + baseClient.getUsername() + " - " + baseClient.getIpAddress().toString() + " : "
                     + baseClient.getPort() + "-" + formattedDate + "]: " + message;
             out.writeUTF(stringToSend);
             out.flush(); // sends data
         } catch (IOException e) {
-            //throw new RuntimeException(e);
+           System.out.println("Message failed to send");
+            System.out.println(e);
+
         }
     }
 }
