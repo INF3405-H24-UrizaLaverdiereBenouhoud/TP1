@@ -58,6 +58,7 @@ public class ClientHandler extends Thread {
                 closeClientConnection();
             } //stop thread
             default -> {
+                    closeClientConnection();
             }
         }
     }

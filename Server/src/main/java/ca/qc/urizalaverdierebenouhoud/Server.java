@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Server {
 
@@ -87,26 +88,45 @@ public class Server {
         try (server) {
             startServer(server, serverIP, serverPort);
             int number = 0;
-            while (!server.isClosed()) {
-                Socket client = server.accept(); //blocs code until connection request is made
-                ClientHandler handler = new ClientHandler(client, number++);
-                handler.start();
-                //should send confirmation message is received
-            }
+            listenForServerExit(server);
+            listenForConnection(server, number);
         } catch (IOException e) {
-            System.out.println("Server rip");
             throw new RuntimeException(e);
         }
+    }
+
+    private static void listenForConnection(ServerSocket server, int number) throws IOException {
+        while (!server.isClosed()) {
+            Socket client = server.accept(); //blocs code until connection request is made
+            ClientHandler handler = new ClientHandler(client, number++);
+            handler.start();
+        }
+    }
+
+    private static void listenForServerExit(ServerSocket server) {
+        new Thread(() -> {
+            Scanner scanner = new Scanner(System.in);
+            while (true) {
+                String line = scanner.nextLine();
+                if (line.equals("exit")) {
+                    try {
+                        server.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    System.exit(0);
+                }
+            }
+        }).start();
     }
 
     private static void startServer(ServerSocket server, InetAddress serverIP, int serverPort) {
         try {
            server.setReuseAddress(true); // so socket does not enter timewait state
-
             server.bind(new InetSocketAddress(serverIP, serverPort)); //define communication endpoint (point d'entré)
             System.out.format("The server is running on %s:%d %n", serverIP, serverPort);
         } catch (IOException e) {
-            //throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 }
