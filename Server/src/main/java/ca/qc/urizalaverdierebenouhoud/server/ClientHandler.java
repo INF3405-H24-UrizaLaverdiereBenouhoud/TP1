@@ -4,9 +4,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ClientHandler extends Thread {
-    private final Socket client;
+    private final  Socket client;
     public static ArrayList<ClientHandler> handlers = new ArrayList<>();
-    public boolean isRunning = true;
+    public boolean isRunning;
     public int clientNumber;
 
     public ClientHandler(Socket socket, int clientNumber) {
@@ -15,6 +15,7 @@ public class ClientHandler extends Thread {
     }
   
     public void run() {
+        isRunning = true;
         handlers.add(this);
         while (isRunning) {
             try {

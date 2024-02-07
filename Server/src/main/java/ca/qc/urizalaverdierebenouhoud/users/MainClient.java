@@ -17,7 +17,7 @@ public class MainClient {
     public static void main(String[] args) {
         try {
             Scanner scanner = new Scanner(System.in);
-            System.out.println("Provide IP:");
+            System.out.println("Provide IP(default: 5003) :");
             String ip = scanner.nextLine();
 
             //login
