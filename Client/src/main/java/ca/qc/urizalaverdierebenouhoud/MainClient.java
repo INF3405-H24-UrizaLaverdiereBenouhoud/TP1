@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import java.net.Inet4Address;
 
@@ -19,7 +21,7 @@ public class MainClient {
 
     private static final String DEFAULT_IP_ADDRESS = "0.0.0.0";
     private static final int DEFAULT_PORT = 5003;
-
+    private static boolean isRunning = true;
     /**
      *  Checks if the given string is a valid IP address
      * @param ipAddress the string to check
@@ -119,7 +121,7 @@ public class MainClient {
         }
         catch (Exception e)
         {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
         }
     }
 
@@ -129,21 +131,45 @@ public class MainClient {
     ////////////////////////////////////////////////////////
     private static void chatRoomFunctionalities(Scanner scanner)
     {
-        while(true) {
-            try
-            {
-                Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort());
-                DataOutputStream out = new DataOutputStream(client.getOutputStream());
+        try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
+            DataOutputStream out = new DataOutputStream(client.getOutputStream());
+            listen(client);
+            while (isRunning) {
                 String message = scanner.nextLine();
-                sendMessageToChat(out,message);
-                client.close();
-            }
-            catch (IOException e){
-                throw new RuntimeException(e);
-            }
+                if(message.equals("exit")) {
+                    isRunning = false;
+                    out.writeByte(4);
+                    out.flush();
+                    client.close();
+                }
+                else {
+                    if((!message.isEmpty())&&message.length()<=200)
+                        sendMessageToChat(out, message);
+                }}
+            //client.close
+        } catch (IOException e) {
+            isRunning = false;
         }
     }
 
+    private static void listen(Socket client) throws IOException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BufferedReader in;
+                try {
+                    while (isRunning) {
+                        in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                        String message = in.readLine();
+                        if(message != null)
+                            System.out.println(message);
+                    }
+                } catch (IOException e) {
+                    isRunning = false;
+                }
+            }
+        }).start();
+    }
 
     ////////////////////////////////////////////////////////
     //Encodage pour envoi
@@ -171,13 +197,19 @@ public class MainClient {
     private static void sendMessage (DataOutputStream out,String message)
     {
         try {
-            out.writeUTF(message);
+            if (message.isEmpty())
+                return;
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy '@' HH:mm:ss");
+            String formattedDate = now.format(formatter);
+            String stringToSend = "[" + baseClient.getUsername() + " - " + baseClient.getIpAddress().toString() + " : "
+                    + baseClient.getPort() + "-" + formattedDate + "]: " + message;
+            out.writeUTF(stringToSend);
             out.flush(); // sends data
-        } catch (IOException  e)
-        {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            System.out.println("Message failed to send");
+            System.out.println(e);
         }
-
     }
 
     private static void getHistory(Socket socket) throws IOException {

@@ -94,13 +94,14 @@ public class Server {
                 //should send confirmation message is received
             }
         } catch (IOException e) {
+            System.out.println("Server rip");
             throw new RuntimeException(e);
         }
     }
 
     private static void startServer(ServerSocket server, InetAddress serverIP, int serverPort) {
         try {
-            server.setReuseAddress(true); // so socket does not enter timewait state
+           server.setReuseAddress(true); // so socket does not enter timewait state
 
             server.bind(new InetSocketAddress(serverIP, serverPort)); //define communication endpoint (point d'entré)
             System.out.format("The server is running on %s:%d %n", serverIP, serverPort);

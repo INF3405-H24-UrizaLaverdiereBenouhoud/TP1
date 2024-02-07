@@ -1,5 +1,4 @@
 package ca.qc.urizalaverdierebenouhoud.server;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -7,18 +6,18 @@ import java.net.Inet4Address;
 import ca.qc.urizalaverdierebenouhoud.users.Account;
 
 public class ClientHandler extends Thread {
-    private final Socket client;
+    private final  Socket client;
     public static ArrayList<ClientHandler> handlers = new ArrayList<>();
-    public boolean isRunning = true;
+    public boolean isRunning;
     public int clientNumber;
 
     public ClientHandler(Socket socket, int clientNumber) {
         this.client = socket;
         System.out.println("New connection with client#" + clientNumber + " at" + socket);
-        this.clientNumber = clientNumber;
     }
-
+  
     public void run() {
+        isRunning = true;
         handlers.add(this);
         while (isRunning) {
             try {
@@ -32,12 +31,16 @@ public class ClientHandler extends Thread {
     }
 
     private void handleError(Exception e) {
+        System.out.println(e.getMessage());
+        closeClientConnection();
+    }
+
+    private void closeClientConnection() {
         try {
-            System.out.println(e.getMessage());
             isRunning = false;
+            handlers.remove(this);
             client.close();
             System.out.println("client #" + clientNumber + " disconnected");
-            handlers.remove(this);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
@@ -63,10 +66,8 @@ public class ClientHandler extends Thread {
                 readMessage(in);
             }
             case 4 -> {
-                client.close();
                 System.out.println("disconnected by will of user");
-                isRunning = false;
-                handlers.remove(this);
+                closeClientConnection();
             } //stop thread
             default -> {
             }
