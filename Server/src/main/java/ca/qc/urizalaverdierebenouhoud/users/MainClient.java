@@ -38,8 +38,8 @@ public class MainClient {
             //send login info to server (account/client)9
             Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort());
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
-            String[] loginInfo = { username, password, ip, Integer.toString(TestPort) };
-            encodeAndSend(3, out, Arrays.toString(loginInfo));
+            String loginInfo = username + " : " + password;
+            encodeAndSend(3, out, loginInfo);
 
             //Display historic
 

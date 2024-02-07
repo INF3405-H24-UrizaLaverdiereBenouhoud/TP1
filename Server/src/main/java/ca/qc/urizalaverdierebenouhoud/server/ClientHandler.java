@@ -3,6 +3,8 @@ package ca.qc.urizalaverdierebenouhoud.server;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.net.Inet4Address;
+import ca.qc.urizalaverdierebenouhoud.users.Account;
 
 public class ClientHandler extends Thread {
     private final Socket client;
@@ -45,15 +47,16 @@ public class ClientHandler extends Thread {
         switch ((int) readFirstByte(in)) {
             case 3 -> {
                 try {
+                    System.out.println(in.readUTF());
                     String[] loginInfo = in.readUTF().split(" : ");
                     Inet4Address ip = (Inet4Address) client.getInetAddress();
-                    int port  = (int) client.getPort();
+                    int port  = client.getPort();
                     Account.login(loginInfo[0], loginInfo[1], ip , port);
                 }
                 catch (Exception e) {
 
                 }
-            } //login
+            }
             case 1 -> {
             } // send recent history
             case 2 -> { // client sent message

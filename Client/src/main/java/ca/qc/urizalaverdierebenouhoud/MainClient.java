@@ -7,10 +7,13 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
+import java.net.Inet4Address;
+
+
+
 
 public class MainClient {
 
@@ -98,16 +101,21 @@ public class MainClient {
             System.out.println("Provide password:");
             String password = scanner.nextLine();
 
+            Socket client = new Socket(serverIpAddress, serverPort);
+            Inet4Address address = (Inet4Address) client.getInetAddress();
+            int port = client.getPort();
+            Account account = new Account(username, password);
+            baseClient = new Client(account, address, port);
+
             //validation
             //send login info to server (account/client)
-            Socket client = new Socket(serverIpAddress, serverPort);
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             encodeAndSend(3, out, username + " : " + password);
 
             //Display historic
 
             //send message TODO: need to implement return from server
-            //chatRoomFunctionalities(scanner);
+            chatRoomFunctionalities(scanner);
         }
         catch (Exception e)
         {
@@ -172,6 +180,8 @@ public class MainClient {
 
     }
 
-
+    private static void getHistory(Socket socket) throws IOException {
+        
+    }
 
 }
