@@ -139,6 +139,7 @@ public class MainClient {
                 }}
             //client.close
         } catch (IOException e) {
+            System.out.println("Server is down");
             isRunning = false;
         }
     }
@@ -156,6 +157,7 @@ public class MainClient {
                             System.out.println(message);
                     }
                 } catch (IOException e) {
+                    System.out.println("Server is down");
                     isRunning = false;
                 }
             }

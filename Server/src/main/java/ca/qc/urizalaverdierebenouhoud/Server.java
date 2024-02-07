@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Server {
 
@@ -87,6 +88,21 @@ public class Server {
         try (server) {
             startServer(server, serverIP, serverPort);
             int number = 0;
+            new Thread(() -> {
+                Scanner scanner = new Scanner(System.in);
+                while (true) {
+                    String line = scanner.nextLine();
+                    if (line.equals("exit")) {
+                        try {
+                            server.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        System.exit(0);
+                    }
+                }
+            }).start();
+
             while (!server.isClosed()) {
                 Socket client = server.accept(); //blocs code until connection request is made
                 ClientHandler handler = new ClientHandler(client, number++);
