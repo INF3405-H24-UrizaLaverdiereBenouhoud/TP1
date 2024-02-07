@@ -22,6 +22,9 @@ public class MainClient {
     private static final String DEFAULT_IP_ADDRESS = "0.0.0.0";
     private static final int DEFAULT_PORT = 5003;
     private static boolean isRunning = true;
+
+    private static InetAddress serverIpAddress;
+    private static int serverPort;
     /**
      *  Checks if the given string is a valid IP address
      * @param ipAddress the string to check
@@ -91,33 +94,12 @@ public class MainClient {
     private static Client baseClient;
 
     public static void main(String[] args) throws IOException {
-        InetAddress serverIpAddress = promptForIpAddress();
-        int serverPort = promptForPort();
+        serverIpAddress = promptForIpAddress();
+        serverPort = promptForPort();
         try {
-            Scanner scanner = new Scanner(System.in);
-
-            //login
-            System.out.println("Enter username :");
-            String username = scanner.nextLine();
-
-            System.out.println("Provide password:");
-            String password = scanner.nextLine();
-
-            Socket client = new Socket(serverIpAddress, serverPort);
-            Inet4Address address = (Inet4Address) client.getInetAddress();
-            int port = client.getPort();
-            Account account = new Account(username, password);
-            baseClient = new Client(account, address, port);
-
-            //validation
-            //send login info to server (account/client)
-            DataOutputStream out = new DataOutputStream(client.getOutputStream());
-            encodeAndSend(3, out, username + " : " + password);
-
-            //Display historic
-
+            sendLogginInfo();
             //send message TODO: need to implement return from server
-            chatRoomFunctionalities(scanner);
+            chatRoomFunctionalities();
         }
         catch (Exception e)
         {
@@ -125,12 +107,38 @@ public class MainClient {
         }
     }
 
+    private static void sendLogginInfo() throws IOException {
+
+        Scanner scanner = new Scanner(System.in);
+        //login
+        System.out.println("Enter username :");
+        String username = scanner.nextLine();
+
+        System.out.println("Provide password:");
+        String password = scanner.nextLine();
+
+        Socket client = new Socket(serverIpAddress, serverPort);
+        Inet4Address address = (Inet4Address) client.getInetAddress();
+        int port = client.getPort();
+        Account account = new Account(username, password);
+        baseClient = new Client(account, address, port);
+
+        //validation
+        //send login info to server (account/client)
+        DataOutputStream out = new DataOutputStream(client.getOutputStream());
+        encodeAndSend(3, out, username + " : " + password);
+
+        //Display historic
+        authentification(client);
+    }
+
 
     ////////////////////////////////////////////////////////
     //Milestone in connection
     ////////////////////////////////////////////////////////
-    private static void chatRoomFunctionalities(Scanner scanner)
+    private static void chatRoomFunctionalities()
     {
+        Scanner scanner = new Scanner(System.in);
         try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             listen(client);
@@ -211,8 +219,47 @@ public class MainClient {
             System.out.println(e);
         }
     }
-
-    private static void getHistory(Socket socket) throws IOException {
+    private static void authentification(Socket client) throws IOException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BufferedReader in;
+                try {
+                    while (isRunning) {
+                        in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                        String isAuthentificated = in.readLine();
+                        String history = in.readLine();
+                        if(history != null && isAuthentificated != null){
+                            switch (isAuthentificated) {
+                                case "0" : {
+                                    System.out.println("Bienvenue " + baseClient.getUsername());
+                                    displayHistory(history);
+                                    break;
+                                }
+                                case "1" : {
+                                    System.out.println("Compte créé");
+                                    System.out.println("Bienvenue " + baseClient.getUsername());
+                                    displayHistory(history);
+                                    break;
+                                }
+                                case "2" : {
+                                    System.out.println("Mot de passe invalide, veuiller réessayer.");
+                                    sendLogginInfo();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    isRunning = false;
+                }
+            }
+        }).start();
+    }
+    private static void displayHistory(String history) {
+        System.out.println("hiiiii");
+    }
+    private static void inputPassword() {
         
     }
 
