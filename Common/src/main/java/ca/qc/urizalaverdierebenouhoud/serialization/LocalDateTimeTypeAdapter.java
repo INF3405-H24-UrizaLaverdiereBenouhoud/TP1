@@ -1,4 +1,4 @@
-package ca.qc.urizalaverdierebenouhoud.message.serialization;
+package ca.qc.urizalaverdierebenouhoud.serialization;
 
 import com.google.gson.*;
 

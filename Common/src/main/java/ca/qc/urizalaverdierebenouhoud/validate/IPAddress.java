@@ -1,5 +1,8 @@
 package ca.qc.urizalaverdierebenouhoud.validate;
 
+/**
+ * This class is used to validate IP addresses
+ */
 public class IPAddress {
 
     /**

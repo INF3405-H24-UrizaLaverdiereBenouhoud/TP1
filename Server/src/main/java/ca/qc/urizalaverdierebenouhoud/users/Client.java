@@ -34,6 +34,12 @@ public class Client {
         return this.getUsername() + " - " + this.getIpAddress().toString().replace("/", "") + ":" + this.getPort();
     }
 
+    /**
+     * Constructor for the Client class
+     * @param account the account of the client
+     * @param ipAddress the IP address of the client
+     * @param port the port of the client
+     */
     public Client(Account account, Inet4Address ipAddress, int port) {
         this.username = account.getUsername();
         this.ipAddress = ipAddress;

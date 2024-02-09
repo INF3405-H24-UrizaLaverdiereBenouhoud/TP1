@@ -1,4 +1,5 @@
 package ca.qc.urizalaverdierebenouhoud;
+
 import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
 import ca.qc.urizalaverdierebenouhoud.server.ClientHandler;
 import java.io.*;
@@ -82,6 +83,12 @@ public class Server {
         }
     }
 
+    /**
+     * Listens for a connection and starts a new ClientHandler when a connection is made
+     * @param server the server to listen for connections on
+     * @param number the number of the client
+     * @throws IOException if an I/O error occurs
+     */
     private static void listenForConnection(ServerSocket server, int number) throws IOException {
         while (!server.isClosed()) {
             Socket client = server.accept(); // blocks code until connection request is made
@@ -90,6 +97,10 @@ public class Server {
         }
     }
 
+    /**
+     *  Listens for the user to type "exit" and closes the server if they do
+     * @param server the server to close
+     */
     private static void listenForServerExit(ServerSocket server) {
         new Thread(() -> {
             Scanner scanner = new Scanner(System.in);
@@ -107,6 +118,12 @@ public class Server {
         }).start();
     }
 
+    /**
+     * Starts the server on the given IP address and port
+     * @param server the server to start
+     * @param serverIP the IP address to start the server on
+     * @param serverPort the port to start the server on
+     */
     private static void startServer(ServerSocket server, InetAddress serverIP, int serverPort) {
         try {
            server.setReuseAddress(true); // so socket does not enter timewait state

@@ -1,4 +1,5 @@
 package ca.qc.urizalaverdierebenouhoud.server;
+
 import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
 
 import java.io.*;
@@ -34,12 +35,19 @@ public class ClientHandler extends Thread {
         ClientHandler.clientHandlerLogger.info("Disconnected");
     }
 
+    /**
+     * Handles an error
+     * @param e the error to handle
+     */
     private void handleError(Exception e) {
         ClientHandler.clientHandlerLogger.severe("Error while handling client #" + clientNumber);
         ClientHandler.clientHandlerLogger.severe(e.getMessage());
         closeClientConnection();
     }
 
+    /**
+     * Closes the client connection
+     */
     private void closeClientConnection() {
         try {
             isRunning = false;
@@ -52,6 +60,11 @@ public class ClientHandler extends Thread {
         }
     }
 
+    /**
+     * Interprets the content of the input stream
+     * @param in the input stream to interpret
+     * @throws IOException if an I/O error occurs
+     */
     private void interpretStreamContent(DataInput in) throws IOException {
         switch (readFirstByte(in)) {
             case 3 -> {
@@ -68,6 +81,11 @@ public class ClientHandler extends Thread {
         }
     }
 
+    /**
+     * Reads the first byte of the input stream
+     * @param in the input stream to read from
+     * @return the first byte of the input stream
+     */
     private static Byte readFirstByte(DataInput in) {
         try {
             Byte task = in.readByte();
@@ -78,6 +96,11 @@ public class ClientHandler extends Thread {
         }
     }
 
+    /**
+     * Reads a message from the client and sends it to all other clients
+     * @param message the message to read
+     * @throws IOException if an I/O error occurs
+     */
     private void readMessage(DataInput message) throws IOException  // not sure if this is right
     {
         String text = message.readUTF();

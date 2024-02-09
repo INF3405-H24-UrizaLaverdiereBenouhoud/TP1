@@ -8,6 +8,9 @@ import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+/**
+ * A custom logger for this project
+ */
 public class INF3405Logger extends Logger {
 
     /**
@@ -39,6 +42,7 @@ public class INF3405Logger extends Logger {
      */
     private static class INF3405Formatter extends Formatter {
         private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
         @Override
         public String format(LogRecord logRecord) {
             String color = "";

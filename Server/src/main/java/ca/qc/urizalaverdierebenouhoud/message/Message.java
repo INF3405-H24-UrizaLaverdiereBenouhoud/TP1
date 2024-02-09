@@ -1,6 +1,6 @@
 package ca.qc.urizalaverdierebenouhoud.message;
 
-import ca.qc.urizalaverdierebenouhoud.message.serialization.LocalDateTimeTypeAdapter;
+import ca.qc.urizalaverdierebenouhoud.serialization.LocalDateTimeTypeAdapter;
 import ca.qc.urizalaverdierebenouhoud.users.Client;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -23,6 +23,8 @@ public class MainClient {
 
     private static final String DEFAULT_IP_ADDRESS = "0.0.0.0";
     private static final int DEFAULT_PORT = 5003;
+    public static final int MAX_MESSAGE_LENGTH = 200;
+    public static final int EXIT_CODE_MESSAGE = 4;
     private static boolean isRunning = true;
 
     /**
@@ -122,13 +124,13 @@ public class MainClient {
                 String message = scanner.nextLine();
                 if(message.equals("exit")) {
                     isRunning = false;
-                    out.writeByte(4);
+                    out.writeByte(EXIT_CODE_MESSAGE);
                     out.flush();
-                }
-                else {
-                    if((!message.isEmpty())&&message.length()<=200)
+                } else {
+                    if((!message.isEmpty()) && message.length() <= MAX_MESSAGE_LENGTH)
                         sendMessageToChat(out, message);
-                }}
+                }
+            }
         } catch (IOException e) {
             MainClient.mainClientLogger.severe("Server is down");
             isRunning = false;
@@ -152,18 +154,11 @@ public class MainClient {
         }).start();
     }
 
-    ////////////////////////////////////////////////////////
-    //Encodage pour envoi
-    ////////////////////////////////////////////////////////
-    // Task methods in Main
-    /////////////////////////////////////
     private static void sendMessageToChat(DataOutputStream out, String message)
     {
         encodeAndSend(2,out, message);
     }
-    /////////////////////////////////////
-    // called methods for sending
-    /////////////////////////////////////
+
     private static void encodeAndSend(int task, DataOutputStream out, String message)
     {
         try {
