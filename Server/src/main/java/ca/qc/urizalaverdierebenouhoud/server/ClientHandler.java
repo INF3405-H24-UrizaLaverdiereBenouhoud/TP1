@@ -1,19 +1,25 @@
 package ca.qc.urizalaverdierebenouhoud.server;
+import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ClientHandler extends Thread {
+
+    private static final INF3405Logger clientHandlerLogger = new INF3405Logger("ClientHandler", null);
     private final  Socket client;
-    public static ArrayList<ClientHandler> handlers = new ArrayList<>();
-    public boolean isRunning;
-    public int clientNumber;
+    protected static final List<ClientHandler> handlers = new ArrayList<>();
+    private boolean isRunning;
+    private int clientNumber;
 
     public ClientHandler(Socket socket, int clientNumber) {
         this.client = socket;
-        System.out.println("New connection with client#" + clientNumber + " at" + socket);
+        ClientHandler.clientHandlerLogger.info("New connection #" + clientNumber + " from " + client.getInetAddress());
     }
-  
+
+    @Override
     public void run() {
         isRunning = true;
         handlers.add(this);
@@ -25,11 +31,12 @@ public class ClientHandler extends Thread {
                 handleError(e);
             }
         }
-        System.out.println("disconnected2");
+        ClientHandler.clientHandlerLogger.info("Disconnected");
     }
 
     private void handleError(Exception e) {
-        System.out.println(e.getMessage());
+        ClientHandler.clientHandlerLogger.severe("Error while handling client #" + clientNumber);
+        ClientHandler.clientHandlerLogger.severe(e.getMessage());
         closeClientConnection();
     }
 
@@ -38,14 +45,15 @@ public class ClientHandler extends Thread {
             isRunning = false;
             handlers.remove(this);
             client.close();
-            System.out.println("client #" + clientNumber + " disconnected");
+            ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " disconnected from server.");
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+            ClientHandler.clientHandlerLogger.severe("Error while closing client connection");
+            ClientHandler.clientHandlerLogger.severe(ex.getMessage());
         }
     }
 
     private void interpretStreamContent(DataInput in) throws IOException {
-        switch ((int) readFirstByte(in)) {
+        switch (readFirstByte(in)) {
             case 3 -> {
             } //login
             case 1 -> {
@@ -54,11 +62,8 @@ public class ClientHandler extends Thread {
                 readMessage(in);
             }
             case 4 -> {
-                System.out.println("disconnected by will of user");
+                ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " disconnected from server by request.");
                 closeClientConnection();
-            } //stop thread
-            default -> {
-                    closeClientConnection();
             }
         }
     }
@@ -66,7 +71,7 @@ public class ClientHandler extends Thread {
     private static Byte readFirstByte(DataInput in) {
         try {
             Byte task = in.readByte();
-            System.out.println("task type: " + task);
+            ClientHandler.clientHandlerLogger.info("Received task: " + task);
             return task;
         } catch (IOException e) {
             return 0;
@@ -78,7 +83,7 @@ public class ClientHandler extends Thread {
         String text = message.readUTF();
         if (text.isEmpty())
             return;
-        System.out.println(text);
+        ClientHandler.clientHandlerLogger.info("(" + clientNumber + ")" + text);
         for (ClientHandler handler : handlers) {
             if (handler.client != this.client) {
                 BufferedWriter out = (new BufferedWriter(new OutputStreamWriter(handler.client.getOutputStream())));

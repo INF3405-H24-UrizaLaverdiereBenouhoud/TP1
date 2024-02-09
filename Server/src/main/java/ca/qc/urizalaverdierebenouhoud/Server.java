@@ -1,4 +1,5 @@
 package ca.qc.urizalaverdierebenouhoud;
+import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
 import ca.qc.urizalaverdierebenouhoud.server.ClientHandler;
 import java.io.*;
 import java.net.InetAddress;
@@ -7,29 +8,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
+import static ca.qc.urizalaverdierebenouhoud.validate.IPAddress.isValidIpAddress;
+
 public class Server {
+
+    private static final INF3405Logger serverLogger = new INF3405Logger("Server", null);
 
     private static final String DEFAULT_IP_ADDRESS = "0.0.0.0";
     private static final int DEFAULT_PORT = 5003;
-
-    /**
-     *  Checks if the given string is a valid IP address
-     * @param ipAddress the string to check
-     * @return true if the string is a valid IP address, false otherwise
-     */
-    private static boolean isValidIpAddress(String ipAddress) {
-        String[] tokens = ipAddress.split("\\.");
-        if (tokens.length != 4) {
-            return false;
-        }
-        for (String token : tokens) {
-            int tokenInt = Integer.parseInt(token);
-            if (tokenInt < 0 || tokenInt > 255) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     /**
      * Checks if the given port is valid (between 5000 and 5050)
@@ -53,7 +39,7 @@ public class Server {
             ipAddress = DEFAULT_IP_ADDRESS;
         }
         if(!isValidIpAddress(ipAddress)) {
-            System.err.println("Invalid IP address");
+            Server.serverLogger.severe("Invalid IP address");
             System.exit(1);
         }
         return InetAddress.getByName(ipAddress);
@@ -73,7 +59,7 @@ public class Server {
         }
         int port = Integer.parseInt(portString);
         if(!isValidPort(port)) {
-            System.err.println("Invalid port");
+            Server.serverLogger.severe("Invalid port");
             System.exit(1);
         }
         return port;
@@ -91,13 +77,14 @@ public class Server {
             listenForServerExit(server);
             listenForConnection(server, number);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            serverLogger.severe("Failed to listen for connection: " + e.getMessage());
+            System.exit(2);
         }
     }
 
     private static void listenForConnection(ServerSocket server, int number) throws IOException {
         while (!server.isClosed()) {
-            Socket client = server.accept(); //blocs code until connection request is made
+            Socket client = server.accept(); // blocks code until connection request is made
             ClientHandler handler = new ClientHandler(client, number++);
             handler.start();
         }
@@ -112,7 +99,7 @@ public class Server {
                     try {
                         server.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        serverLogger.severe("Failed to close server: " + e.getMessage());
                     }
                     System.exit(0);
                 }
@@ -124,9 +111,10 @@ public class Server {
         try {
            server.setReuseAddress(true); // so socket does not enter timewait state
             server.bind(new InetSocketAddress(serverIP, serverPort)); //define communication endpoint (point d'entré)
-            System.out.format("The server is running on %s:%d %n", serverIP, serverPort);
+            serverLogger.info("Server started on " + serverIP + ":" + serverPort);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            serverLogger.severe("Failed to start server: " + e.getMessage());
+            System.exit(2);
         }
     }
 }

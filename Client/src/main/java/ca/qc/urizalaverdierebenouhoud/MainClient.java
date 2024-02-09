@@ -1,5 +1,6 @@
 package ca.qc.urizalaverdierebenouhoud;
 
+import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
 import ca.qc.urizalaverdierebenouhoud.users.Account;
 import ca.qc.urizalaverdierebenouhoud.users.Client;
 
@@ -14,29 +15,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
+import static ca.qc.urizalaverdierebenouhoud.validate.IPAddress.isValidIpAddress;
+
 public class MainClient {
+
+    private static final INF3405Logger mainClientLogger = new INF3405Logger("MainClient", null);
 
     private static final String DEFAULT_IP_ADDRESS = "0.0.0.0";
     private static final int DEFAULT_PORT = 5003;
     private static boolean isRunning = true;
-    /**
-     *  Checks if the given string is a valid IP address
-     * @param ipAddress the string to check
-     * @return true if the string is a valid IP address, false otherwise
-     */
-    private static boolean isValidIpAddress(String ipAddress) {
-        String[] tokens = ipAddress.split("\\.");
-        if (tokens.length != 4) {
-            return false;
-        }
-        for (String token : tokens) {
-            int tokenInt = Integer.parseInt(token);
-            if (tokenInt < 0 || tokenInt > 255) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     /**
      * Checks if the given port is valid (between 5000 and 5050)
@@ -60,7 +47,7 @@ public class MainClient {
             ipAddress = DEFAULT_IP_ADDRESS;
         }
         if(!isValidIpAddress(ipAddress)) {
-            System.err.println("Invalid IP address");
+            MainClient.mainClientLogger.severe("Invalid IP address");
             System.exit(1);
         }
         return InetAddress.getByName(ipAddress);
@@ -73,16 +60,22 @@ public class MainClient {
      */
     private static int promptForPort() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print("Enter port (default: 5003) : ");
+        System.out.print("Enter port (default: " + DEFAULT_PORT + ") : ");
         String portString = reader.readLine();
         if (portString.isEmpty()) {
             return DEFAULT_PORT;
         }
-        int port = Integer.parseInt(portString);
-        if(!isValidPort(port)) {
-            System.err.println("Invalid port");
+        int port = DEFAULT_PORT;
+        try {
+            Integer.parseInt(portString);
+        } catch (NumberFormatException e) {
+            MainClient.mainClientLogger.severe("Invalid port");
             System.exit(1);
         }
+        if (isValidPort(port)) return port;
+
+        MainClient.mainClientLogger.severe("Invalid port");
+        System.exit(1);
         return port;
     }
     private static Client baseClient;
@@ -116,10 +109,10 @@ public class MainClient {
         }
     }
 
-
-    ////////////////////////////////////////////////////////
-    //Milestone in connection
-    ////////////////////////////////////////////////////////
+    /**
+     *  Chat room functionalities
+     * @param scanner the scanner to read user input
+     */
     private static void chatRoomFunctionalities(Scanner scanner)
     {
         try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
@@ -131,35 +124,30 @@ public class MainClient {
                     isRunning = false;
                     out.writeByte(4);
                     out.flush();
-                    client.close();
                 }
                 else {
                     if((!message.isEmpty())&&message.length()<=200)
                         sendMessageToChat(out, message);
                 }}
-            //client.close
         } catch (IOException e) {
-            System.out.println("Server is down");
+            MainClient.mainClientLogger.severe("Server is down");
             isRunning = false;
         }
     }
 
-    private static void listen(Socket client) throws IOException {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                BufferedReader in;
-                try {
-                    while (isRunning) {
-                        in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                        String message = in.readLine();
-                        if(message != null)
-                            System.out.println(message);
-                    }
-                } catch (IOException e) {
-                    System.out.println("Server is down");
-                    isRunning = false;
+    private static void listen(Socket client) {
+        new Thread(() -> {
+            BufferedReader in;
+            try {
+                while (isRunning) {
+                    in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                    String message = in.readLine();
+                    if(message != null)
+                        MainClient.mainClientLogger.info(message);
                 }
+            } catch (IOException e) {
+                MainClient.mainClientLogger.severe("Server is down");
+                isRunning = false;
             }
         }).start();
     }
@@ -184,7 +172,8 @@ public class MainClient {
         }
         catch (IOException e)
         {
-            throw new RuntimeException(e);
+            MainClient.mainClientLogger.warning("Error while encoding and sending message");
+            MainClient.mainClientLogger.warning(e.getMessage());
         }
     }
     private static void sendMessage (DataOutputStream out,String message)
@@ -200,8 +189,8 @@ public class MainClient {
             out.writeUTF(stringToSend);
             out.flush(); // sends data
         } catch (IOException e) {
-            System.out.println("Message failed to send");
-            System.out.println(e);
+            MainClient.mainClientLogger.warning("Error while sending message");
+            MainClient.mainClientLogger.warning(e.getMessage());
         }
     }
 

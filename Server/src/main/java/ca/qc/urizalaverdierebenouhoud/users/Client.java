@@ -1,44 +1,25 @@
 package ca.qc.urizalaverdierebenouhoud.users;
 
-import javax.imageio.IIOException;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Inet4Address;
-import java.net.Socket;
-import java.util.Scanner;
 
 public class Client {
-    private String username;
-    private Inet4Address ipAddress;
-    private int port;
+    private final String username;
+    private final Inet4Address ipAddress;
+    private final int port;
 
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public Inet4Address getIpAddress() {
         return ipAddress;
-    }
-
-    public void setIpAddress(Inet4Address ipAddress) {
-        this.ipAddress = ipAddress;
     }
 
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    // TODO Implement a toJSON method and follow this pattern
     /*
         Define a Client as the following JSON Object:
         {

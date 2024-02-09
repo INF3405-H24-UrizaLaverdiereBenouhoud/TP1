@@ -20,7 +20,7 @@ public class Message implements Comparable<Message> {
     private static final Logger messageLogger = Logger.getLogger(Message.class.getName());
     public static List<Message> messages = new ArrayList<>();
 
-    private Client author;
+    private final Client author;
     private LocalDateTime time;
     private String content;
 
@@ -67,16 +67,19 @@ public class Message implements Comparable<Message> {
         String fileContent;
         try {
             fileContent = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-
-            try {
-                Message[] loadedMessages = gson.fromJson(fileContent, Message[].class);
-                Message.messages = new ArrayList<>(Arrays.asList(loadedMessages));
-            } catch (JsonSyntaxException jsonSyntaxException) {
-                Message.messageLogger.severe("File" + file.getAbsolutePath() + " is not a valid JSON file");
-                System.exit(1);
-            }
+            attemptToParseJSON(file, gson, fileContent);
         } catch (IOException e) {
             Message.messageLogger.severe("File" + file.getAbsolutePath() + " couldn't be read");
+            System.exit(1);
+        }
+    }
+
+    private static void attemptToParseJSON(File file, Gson gson, String fileContent) {
+        try {
+            Message[] loadedMessages = gson.fromJson(fileContent, Message[].class);
+            Message.messages = new ArrayList<>(Arrays.asList(loadedMessages));
+        } catch (JsonSyntaxException jsonSyntaxException) {
+            Message.messageLogger.severe("File" + file.getAbsolutePath() + " is not a valid JSON file");
             System.exit(1);
         }
     }
