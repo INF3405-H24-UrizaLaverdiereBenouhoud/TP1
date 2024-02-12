@@ -76,9 +76,7 @@ public class ClientHandler extends Thread {
             case 3 -> {
                 try {
                     String[] loginInfo = in.readUTF().split(" : ");
-                    Inet4Address ip = (Inet4Address) client.getInetAddress();
-                    int port = client.getPort();
-                    sendLogginResponse(Account.login(loginInfo[0], loginInfo[1], ip, port));
+                    sendLogginResponse(Account.login(loginInfo[0], loginInfo[1], (Inet4Address) client.getInetAddress(), client.getPort()));
                 }
                 catch (Exception e) {
 
@@ -136,8 +134,6 @@ public class ClientHandler extends Thread {
     {
         DataOutputStream out = new DataOutputStream(client.getOutputStream());
         out.writeByte(task);
-        if (task<2)
-            out.writeUTF(Arrays.toString(Message.getUpToLast15Messages()));
         out.flush();
     }
 }

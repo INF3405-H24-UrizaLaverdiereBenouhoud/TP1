@@ -225,25 +225,17 @@ public class MainClient {
             try {
                 while (isRunning) {
                     DataInputStream in = new DataInputStream(client.getInputStream());
-                    Byte task = in.readByte();
-                    System.out.println(in);
-
-                    // String history = in.readLine();
+                    byte task = in.readByte();
                     switch (task) {
                         case '0' -> {
                             System.out.println("Bienvenue " + baseClient.getUsername());
-                            //displayHistory(history);
-                            //String messages =  in.readUTF();
                         }
                         case '1' -> {
                             System.out.println("Compte créé");
                             System.out.println("Bienvenue " + baseClient.getUsername());
-                            //displayHistory(history);
-                            //String messages =  in.readUTF();
                         }
                         case '2' -> {
                             System.out.println("Mot de passe invalide, veuiller réessayer.");
-                            sendLoginInfo();
                         }
                     }
                 }
@@ -253,10 +245,7 @@ public class MainClient {
         }).start();
     }
     private static void displayHistory(String history) {
-        System.out.println("hiiiii");
-    }
-    private static void inputPassword() {
-        
+
     }
 
 }
