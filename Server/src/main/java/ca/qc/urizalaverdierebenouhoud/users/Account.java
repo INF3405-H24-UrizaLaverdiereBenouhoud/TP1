@@ -24,12 +24,10 @@ public class Account {
      * Takes the accounts defined into the provided JSON file and loads them into
      * @param username The username of the account to find
      * @param password The password of the account to find
-     * @param ipAddress The IP Address of the client
-     * @param port The port of the client
      * @return The Client object corresponding to the account
      * @throws InvalidUsernamePasswordComboException If the username/password combo is invalid
      */
-    public static byte login(String username, String password, Inet4Address ipAddress, int port) {
+    public static byte login(String username, String password) {
         try {
             for (Account account : Account.accounts) {
                 if (account.getUsername().equals(username)) {
