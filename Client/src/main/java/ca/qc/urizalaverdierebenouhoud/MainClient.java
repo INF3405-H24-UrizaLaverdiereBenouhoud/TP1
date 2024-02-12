@@ -4,21 +4,13 @@ import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
 import ca.qc.urizalaverdierebenouhoud.users.Account;
 import ca.qc.urizalaverdierebenouhoud.users.Client;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import java.net.Inet4Address;
-
-
-
-
-import static ca.qc.urizalaverdierebenouhoud.validate.IPAddress.isValidIpAddress;
 
 public class MainClient {
 
@@ -110,9 +102,10 @@ public class MainClient {
         serverIpAddress = promptForIpAddress();
         serverPort = promptForPort();
         try {
-            sendLogginInfo();
+            sendLoginInfo();
             //send message TODO: need to implement return from server
-            chatRoomFunctionalities();
+            Scanner scanner = new Scanner(System.in);
+            chatRoomFunctionalities(scanner);
         }
         catch (Exception e)
         {
@@ -120,7 +113,7 @@ public class MainClient {
         }
     }
 
-    private static void sendLogginInfo() throws IOException {
+    private static void sendLoginInfo() throws IOException {
 
         Scanner scanner = new Scanner(System.in);
         //login
@@ -156,7 +149,6 @@ public class MainClient {
      */
     private static void chatRoomFunctionalities(Scanner scanner)
     {
-        Scanner scanner = new Scanner(System.in);
         try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             listen(client);
@@ -229,39 +221,34 @@ public class MainClient {
         }
     }
     private static void authentification(Socket client) throws IOException {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                BufferedReader in;
-                try {
-                    while (isRunning) {
-                        in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                        String isAuthentificated = in.readLine();
-                        String history = in.readLine();
-                        if(history != null && isAuthentificated != null){
-                            switch (isAuthentificated) {
-                                case "0" : {
-                                    System.out.println("Bienvenue " + baseClient.getUsername());
-                                    displayHistory(history);
-                                    break;
-                                }
-                                case "1" : {
-                                    System.out.println("Compte créé");
-                                    System.out.println("Bienvenue " + baseClient.getUsername());
-                                    displayHistory(history);
-                                    break;
-                                }
-                                case "2" : {
-                                    System.out.println("Mot de passe invalide, veuiller réessayer.");
-                                    sendLogginInfo();
-                                    break;
-                                }
-                            }
+        new Thread(() -> {
+            try {
+                while (isRunning) {
+                    DataInputStream in = new DataInputStream(client.getInputStream());
+                    Byte task = in.readByte();
+                    System.out.println(in);
+
+                    // String history = in.readLine();
+                    switch (task) {
+                        case '0' -> {
+                            System.out.println("Bienvenue " + baseClient.getUsername());
+                            //displayHistory(history);
+                            //String messages =  in.readUTF();
+                        }
+                        case '1' -> {
+                            System.out.println("Compte créé");
+                            System.out.println("Bienvenue " + baseClient.getUsername());
+                            //displayHistory(history);
+                            //String messages =  in.readUTF();
+                        }
+                        case '2' -> {
+                            System.out.println("Mot de passe invalide, veuiller réessayer.");
+                            sendLoginInfo();
                         }
                     }
-                } catch (IOException e) {
-                    isRunning = false;
                 }
+            } catch (IOException e) {
+                isRunning = false;
             }
         }).start();
     }

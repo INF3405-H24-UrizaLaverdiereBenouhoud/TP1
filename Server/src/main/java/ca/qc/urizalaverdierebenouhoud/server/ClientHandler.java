@@ -6,7 +6,11 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.net.Inet4Address;
+
+import ca.qc.urizalaverdierebenouhoud.message.Message;
 import ca.qc.urizalaverdierebenouhoud.users.Account;
+
+import java.util.Arrays;
 import java.util.List;
 
 public class ClientHandler extends Thread {
@@ -73,8 +77,8 @@ public class ClientHandler extends Thread {
                 try {
                     String[] loginInfo = in.readUTF().split(" : ");
                     Inet4Address ip = (Inet4Address) client.getInetAddress();
-                    int port  = client.getPort();
-                    Account.login(loginInfo[0], loginInfo[1], ip , port);
+                    int port = client.getPort();
+                    sendLogginResponse(Account.login(loginInfo[0], loginInfo[1], ip, port));
                 }
                 catch (Exception e) {
 
@@ -128,15 +132,12 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private void sendLogginResponse(String message) throws IOException  // not sure if this is right
+    private void sendLogginResponse(byte task) throws IOException
     {
-        for (ClientHandler handler : handlers) {
-            if (handler.client != this.client) {
-                BufferedWriter out = (new BufferedWriter(new OutputStreamWriter(handler.client.getOutputStream())));
-                out.write(message);
-                out.newLine();
-                out.flush();
-            }
-        }
+        DataOutputStream out = new DataOutputStream(client.getOutputStream());
+        out.writeByte(task);
+        if (task<2)
+            out.writeUTF(Arrays.toString(Message.getUpToLast15Messages()));
+        out.flush();
     }
 }

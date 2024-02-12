@@ -29,33 +29,24 @@ public class Account {
      * @return The Client object corresponding to the account
      * @throws InvalidUsernamePasswordComboException If the username/password combo is invalid
      */
-    public static void login(String username, String password, Inet4Address ipAddress, int port) throws InvalidUsernamePasswordComboException {
+    public static byte login(String username, String password, Inet4Address ipAddress, int port) {
         try {
-            BufferedWriter out;
-            Socket socket = new Socket();
             for (Account account : Account.accounts) {
                 if (account.getUsername().equals(username)) {
                     if (account.getPassword().equals(password)) {
-                        // Assuming outputStream is initialized and Message.getUpToLast15Messages() returns a String
-                        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                        String message = Arrays.toString(Message.getUpToLast15Messages());
-                        out.write("0" + "/n" + message);
-                        out.flush(); // Flush the buffer to ensure the message is sent immediately
-
-                        return;
+                        System.out.println("hi person");
+                        return '0';
                     } else {
-                        out = new BufferedWriter("2");
-                        out.flush();
-                        return;
+                        System.out.println("bad password");
+                        return '2';
                     }
                 }
             }
             accounts.add(new Account(username, password));
-            out = new BufferedWriter("1");
-            out.flush();
-        } catch (Exception e) {
-
-        }
+            System.out.println("newAccount");
+            return '1';
+        } catch (Exception e) {}
+        return '3';
     }
 
     public String getUsername() {
