@@ -228,7 +228,6 @@ public class MainClient {
                 while (isRunning) {
                     DataInputStream in = new DataInputStream(client.getInputStream());
                     Byte task = in.readByte();
-                    System.out.println(in);
 
                     // String history = in.readLine();
                     switch (task) {
