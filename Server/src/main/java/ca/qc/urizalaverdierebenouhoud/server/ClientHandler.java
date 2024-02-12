@@ -50,7 +50,6 @@ public class ClientHandler extends Thread {
         switch ((int) readFirstByte(in)) {
             case 3 -> {
                 try {
-                    System.out.println(in.readUTF());
                     String[] loginInfo = in.readUTF().split(" : ");
                     Inet4Address ip = (Inet4Address) client.getInetAddress();
                     int port  = client.getPort();
@@ -94,6 +93,18 @@ public class ClientHandler extends Thread {
             if (handler.client != this.client) {
                 BufferedWriter out = (new BufferedWriter(new OutputStreamWriter(handler.client.getOutputStream())));
                 out.write(text);
+                out.newLine();
+                out.flush();
+            }
+        }
+    }
+
+    private void sendLogginResponse(String message) throws IOException  // not sure if this is right
+    {
+        for (ClientHandler handler : handlers) {
+            if (handler.client != this.client) {
+                BufferedWriter out = (new BufferedWriter(new OutputStreamWriter(handler.client.getOutputStream())));
+                out.write(message);
                 out.newLine();
                 out.flush();
             }
