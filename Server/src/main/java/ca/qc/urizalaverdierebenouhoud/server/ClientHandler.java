@@ -76,7 +76,9 @@ public class ClientHandler extends Thread {
             case 3 -> {
                 try {
                     String[] loginInfo = in.readUTF().split(" : ");
-                    sendLogginResponse(Account.login(loginInfo[0], loginInfo[1]));
+                    Inet4Address ip = (Inet4Address) client.getInetAddress();
+                    int port = client.getPort();
+                    sendLogginResponse(Account.login(loginInfo[0], loginInfo[1], ip, port));
                 }
                 catch (Exception e) {
 
@@ -130,19 +132,12 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private void sendLogginResponse(byte task) throws IOException {
+    private void sendLogginResponse(byte task) throws IOException
+    {
         DataOutputStream out = new DataOutputStream(client.getOutputStream());
         out.writeByte(task);
-        if (task == '0' || task == '1') {
-            Message[] messagesObj = Message.getUpToLast15Messages();
-            if (messagesObj.length > 0) {
-                ArrayList<String> stringMessages = new ArrayList<String>();
-                for (Message message : messagesObj) {
-                    stringMessages.add(message.toString());
-                }
-                out.writeUTF(String.join(" , ", stringMessages));
-            }
-            out.flush();
-        }
+        if (task<2)
+            out.writeUTF(Arrays.toString(Message.getUpToLast15Messages()));
+        out.flush();
     }
 }

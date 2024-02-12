@@ -3,10 +3,8 @@ package ca.qc.urizalaverdierebenouhoud;
 import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
 import ca.qc.urizalaverdierebenouhoud.users.Account;
 import ca.qc.urizalaverdierebenouhoud.users.Client;
-import ca.qc.urizalaverdierebenouhoud.message.Message;
 
 import java.io.*;
-import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.time.LocalDateTime;
@@ -234,12 +232,14 @@ public class MainClient {
                     switch (task) {
                         case '0' -> {
                             System.out.println("Bienvenue " + baseClient.getUsername());
-                            displayHistory(in.readUTF(), client);
+                            //displayHistory(history);
+                            //String messages =  in.readUTF();
                         }
                         case '1' -> {
                             System.out.println("Compte créé");
                             System.out.println("Bienvenue " + baseClient.getUsername());
-                            displayHistory(in.readUTF(), client);
+                            //displayHistory(history);
+                            //String messages =  in.readUTF();
                         }
                         case '2' -> {
                             System.out.println("Mot de passe invalide, veuiller réessayer.");
@@ -252,13 +252,11 @@ public class MainClient {
             }
         }).start();
     }
-    private static void displayHistory(String history, Socket socket) {
-       try {
-           String[] messagesOut = history.split(" , ");
-           for (String message : messagesOut) {
-               System.out.println(message);
-           }
-       } catch (Exception e) {}
+    private static void displayHistory(String history) {
+        System.out.println("hiiiii");
+    }
+    private static void inputPassword() {
+        
     }
 
 }
