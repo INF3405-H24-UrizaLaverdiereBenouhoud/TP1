@@ -99,12 +99,6 @@ public class Message implements Comparable<Message> {
      * @return The last 15 messages, or less if there are less than 15 messages
      */
     public static Message[] getUpToLast15Messages() {
-        System.out.println("Messages: =====================");
-        //System.out.println(Message.messages);
-        for (Message message : Message.messages) {
-            System.out.println(message);
-
-        }
         Message.messages.sort(Message::compareTo);
         int numberOfMessages = Message.messages.size();
         int numberOfMessagesToReturn = Math.min(numberOfMessages, 15);
