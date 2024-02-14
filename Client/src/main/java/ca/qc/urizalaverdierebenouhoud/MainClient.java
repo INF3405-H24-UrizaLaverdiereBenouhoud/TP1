@@ -1,6 +1,7 @@
 package ca.qc.urizalaverdierebenouhoud;
 
 import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
+import ca.qc.urizalaverdierebenouhoud.message.Message;
 import ca.qc.urizalaverdierebenouhoud.users.Account;
 import ca.qc.urizalaverdierebenouhoud.users.Client;
 
@@ -12,7 +13,6 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 import static ca.qc.urizalaverdierebenouhoud.validate.IPAddress.isValidIpAddress;
@@ -102,12 +102,39 @@ public class MainClient {
 
             //Display historic
 
+            retrieveHistoric();
+
             //send message TODO: need to implement return from server
             chatRoomFunctionalities(scanner);
         }
         catch (Exception e)
         {
             //throw new RuntimeException(e);
+        }
+    }
+
+    private static void retrieveHistoric() {
+        mainClientLogger.info("Retrieving historic of messages... ");
+        try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
+            DataOutputStream out = new DataOutputStream(client.getOutputStream());
+            out.writeByte(1);
+            out.flush();
+
+            while (isRunning) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                String message = in.readLine();
+                if(message != null) {
+                    if (message.equals("historic-end")) {
+                        mainClientLogger.info("Retrieved end of historic of messages signal from server");
+                        break;
+                    } else {
+                        System.out.println(message);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            MainClient.mainClientLogger.severe("IOException when trying to retrieve historic");
+            isRunning = false;
         }
     }
 
@@ -132,7 +159,7 @@ public class MainClient {
                 }
             }
         } catch (IOException e) {
-            MainClient.mainClientLogger.severe("Server is down");
+            MainClient.mainClientLogger.severe("IOException when trying to send message to chat");
             isRunning = false;
         }
     }
@@ -148,8 +175,9 @@ public class MainClient {
                         MainClient.mainClientLogger.info(message);
                 }
             } catch (IOException e) {
-                MainClient.mainClientLogger.severe("Server is down");
+                MainClient.mainClientLogger.severe("IOException when trying to listen to server messages");
                 isRunning = false;
+                System.exit(1);
             }
         }).start();
     }
@@ -171,17 +199,13 @@ public class MainClient {
             MainClient.mainClientLogger.warning(e.getMessage());
         }
     }
-    private static void sendMessage (DataOutputStream out,String message)
+    private static void sendMessage(DataOutputStream out, String message)
     {
         try {
             if (message.isEmpty())
                 return;
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy '@' HH:mm:ss");
-            String formattedDate = now.format(formatter);
-            String stringToSend = "[" + baseClient.getUsername() + " - " + baseClient.getIpAddress().toString() + " : "
-                    + baseClient.getPort() + "-" + formattedDate + "]: " + message;
-            out.writeUTF(stringToSend);
+            Message messageToSend = new Message(baseClient, LocalDateTime.now(), message);
+            out.writeUTF(String.valueOf(messageToSend));
             out.flush(); // sends data
         } catch (IOException e) {
             MainClient.mainClientLogger.warning("Error while sending message");
