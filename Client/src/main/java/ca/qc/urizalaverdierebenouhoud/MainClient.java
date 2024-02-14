@@ -90,22 +90,28 @@ public class MainClient {
 
             Scanner scanner = new Scanner(System.in);
 
-            //login
-            //enter username
-
-            //enter password
-
             //validation
             Account account = new Account("dummy account", "dummy");
             baseClient = new Client(account, (Inet4Address) serverIpAddress, serverPort);
-            //if user does not exist add to DB
 
-            //Display historic
+            try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
+                mainClientLogger.info("Successfully connected to server");
+                //login
+                //enter username
 
-            retrieveHistoric();
+                //enter password
 
-            //send message TODO: need to implement return from server
-            chatRoomFunctionalities(scanner);
+                //if user does not exist add to DB
+
+                //Display historic
+
+                retrieveHistoric(client);
+
+                //send message TODO: need to implement return from server
+                chatRoomFunctionalities(client, scanner);
+            }
+
+
         }
         catch (Exception e)
         {
@@ -113,9 +119,9 @@ public class MainClient {
         }
     }
 
-    private static void retrieveHistoric() {
+    private static void retrieveHistoric(Socket client) {
         mainClientLogger.info("Retrieving historic of messages... ");
-        try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
+        try {
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             out.writeByte(1);
             out.flush();
@@ -139,12 +145,14 @@ public class MainClient {
     }
 
     /**
-     *  Chat room functionalities
+     * Chat room functionalities
+     *
+     * @param client
      * @param scanner the scanner to read user input
      */
-    private static void chatRoomFunctionalities(Scanner scanner)
+    private static void chatRoomFunctionalities(Socket client, Scanner scanner)
     {
-        try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
+        try {
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             listen(client);
             while (isRunning) {
