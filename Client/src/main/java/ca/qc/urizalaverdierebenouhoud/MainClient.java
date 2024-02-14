@@ -152,6 +152,7 @@ public class MainClient {
      */
     private static void chatRoomFunctionalities(Socket client, Scanner scanner)
     {
+        isRunning = true;
         try {
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             listen(client);
