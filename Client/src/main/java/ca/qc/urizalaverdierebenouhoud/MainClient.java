@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import static ca.qc.urizalaverdierebenouhoud.validate.IPAddress.isValidIpAddress;
@@ -103,12 +104,33 @@ public class MainClient {
 
             //Display historic
 
+            retrieveHistoric();
+
             //send message TODO: need to implement return from server
             chatRoomFunctionalities(scanner);
         }
         catch (Exception e)
         {
             //throw new RuntimeException(e);
+        }
+    }
+
+    private static void retrieveHistoric() {
+        System.out.println("Retrieving historic of messages... ");
+        try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
+            DataOutputStream out = new DataOutputStream(client.getOutputStream());
+            out.writeByte(1);
+            out.flush();
+
+            while (isRunning) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                String message = in.readLine();
+                if(message != null)
+                    System.out.println(message);
+            }
+        } catch (IOException e) {
+            MainClient.mainClientLogger.severe("IOException when trying to retrieve historic");
+            isRunning = false;
         }
     }
 
@@ -133,7 +155,7 @@ public class MainClient {
                 }
             }
         } catch (IOException e) {
-            MainClient.mainClientLogger.severe("Server is down");
+            MainClient.mainClientLogger.severe("IOException when trying to send message to chat");
             isRunning = false;
         }
     }
@@ -149,8 +171,9 @@ public class MainClient {
                         MainClient.mainClientLogger.info(message);
                 }
             } catch (IOException e) {
-                MainClient.mainClientLogger.severe("Server is down");
+                MainClient.mainClientLogger.severe("IOException when trying to listen to server messages");
                 isRunning = false;
+                System.exit(1);
             }
         }).start();
     }

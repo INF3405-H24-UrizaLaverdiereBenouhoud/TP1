@@ -1,5 +1,6 @@
 package ca.qc.urizalaverdierebenouhoud.message;
 
+import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
 import ca.qc.urizalaverdierebenouhoud.serialization.LocalDateTimeTypeAdapter;
 import ca.qc.urizalaverdierebenouhoud.users.Client;
 import com.google.gson.Gson;
@@ -8,6 +9,9 @@ import com.google.gson.JsonSyntaxException;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -15,11 +19,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Message implements Comparable<Message> {
 
     private static File messagesFile;
-    private static final Logger messageLogger = Logger.getLogger(Message.class.getName());
+    private static final INF3405Logger messageLogger = new INF3405Logger("Message", null);
     public static List<Message> messages = new ArrayList<>();
 
     private final Client author;
@@ -124,6 +130,42 @@ public class Message implements Comparable<Message> {
             System.exit(1);
         }
     }
+
+    /**
+     *  Parses a message from a string (result of the toString method)
+     * @param messageString the string to parse
+     * @return the parsed Message object
+     * @throws UnknownHostException if the IP address of the author is invalid
+     */
+    public static Message parseMessageFromString(String messageString) throws UnknownHostException {
+        String regex = "\\[(.+?) - (\\d+\\.\\d+\\.\\d+\\.\\d+):(\\d+) - (\\d{4}-\\d{2}-\\d{2}@\\d{2}:\\d{2}:\\d{2})\\]: (.+)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(messageString);
+
+        if (matcher.matches()) {
+            String username = matcher.group(1);
+            String ipAddress = matcher.group(2);
+            int port = Integer.parseInt(matcher.group(3));
+            String datetime = matcher.group(4);
+            String message = matcher.group(5);
+
+            Client author = new Client(username, (Inet4Address) InetAddress.getByName(ipAddress), port);
+            LocalDateTime time = LocalDateTime.parse(datetime, LocalDateTimeTypeAdapter.DISPLAY_DATE_TIME_FORMATTER);
+            return new Message(author, time, message);
+        }
+        return null;
+    }
+
+    /**
+     * Saves a message to the list of messages and to the JSON file
+     * @param message the message to save
+     */
+    public static void saveMessage(Message message) {
+        Message.messages.add(message);
+        Message.saveMessages();
+        messageLogger.info(message.getAuthor() + "'s message saved");
+    }
+
     @Override
     public String toString() {
         return "[" + this.getAuthor() + " - " + this.getFormattedTime() + "]: " + this.getContent();
@@ -133,10 +175,6 @@ public class Message implements Comparable<Message> {
         this.author = author;
         this.time = time;
         this.content = content;
-
-        Message.messages.sort(Message::compareTo);
-        Message.saveMessages();
-        messageLogger.info("Saved message to " + Message.messagesFile.getAbsolutePath());
     }
 
     @Override

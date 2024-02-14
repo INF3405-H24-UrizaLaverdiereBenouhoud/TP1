@@ -1,10 +1,12 @@
 package ca.qc.urizalaverdierebenouhoud.server;
 
 import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
+import ca.qc.urizalaverdierebenouhoud.message.Message;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ClientHandler extends Thread {
@@ -70,6 +72,14 @@ public class ClientHandler extends Thread {
             case 3 -> {
             } //login
             case 1 -> {
+                ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " requested recent history.");
+                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+                for (Message message : Message.getUpToLast15Messages()) {
+                    clientHandlerLogger.info("Sending message (history): " + message.toString());
+                    out.write(message.toString());
+                    out.newLine();
+                    out.flush();
+                }
             } // send recent history
             case 2 -> { // client sent message
                 readMessage(in);
@@ -104,6 +114,7 @@ public class ClientHandler extends Thread {
     private void readMessage(DataInput message) throws IOException  // not sure if this is right
     {
         String text = message.readUTF();
+        Message.saveMessage(Message.parseMessageFromString(text));
         if (text.isEmpty())
             return;
         ClientHandler.clientHandlerLogger.info("(" + clientNumber + ")" + text);
