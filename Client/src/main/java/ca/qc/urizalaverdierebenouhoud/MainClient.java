@@ -172,7 +172,7 @@ public class MainClient {
                     in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                     String message = in.readLine();
                     if(message != null)
-                        MainClient.mainClientLogger.info(message);
+                        System.out.println(message);
                 }
             } catch (IOException e) {
                 MainClient.mainClientLogger.severe("IOException when trying to listen to server messages");
