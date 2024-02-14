@@ -1,6 +1,7 @@
 package ca.qc.urizalaverdierebenouhoud;
 
 import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
+import ca.qc.urizalaverdierebenouhoud.message.Message;
 import ca.qc.urizalaverdierebenouhoud.users.Account;
 import ca.qc.urizalaverdierebenouhoud.users.Client;
 
@@ -171,17 +172,13 @@ public class MainClient {
             MainClient.mainClientLogger.warning(e.getMessage());
         }
     }
-    private static void sendMessage (DataOutputStream out,String message)
+    private static void sendMessage(DataOutputStream out, String message)
     {
         try {
             if (message.isEmpty())
                 return;
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy '@' HH:mm:ss");
-            String formattedDate = now.format(formatter);
-            String stringToSend = "[" + baseClient.getUsername() + " - " + baseClient.getIpAddress().toString() + " : "
-                    + baseClient.getPort() + "-" + formattedDate + "]: " + message;
-            out.writeUTF(stringToSend);
+            Message messageToSend = new Message(baseClient, LocalDateTime.now(), message);
+            out.writeUTF(String.valueOf(messageToSend));
             out.flush(); // sends data
         } catch (IOException e) {
             MainClient.mainClientLogger.warning("Error while sending message");
