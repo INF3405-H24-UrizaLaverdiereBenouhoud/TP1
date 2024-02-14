@@ -125,9 +125,8 @@ public class MainClient {
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             out.writeByte(1);
             out.flush();
-
+            BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             while (isRunning) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 String message = in.readLine();
                 if(message != null) {
                     if (message.equals("historic-end")) {
@@ -175,10 +174,10 @@ public class MainClient {
 
     private static void listen(Socket client) {
         new Thread(() -> {
-            BufferedReader in;
+
             try {
+                BufferedReader in  = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 while (isRunning) {
-                    in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                     String message = in.readLine();
                     if(message != null)
                         MainClient.mainClientLogger.info(message);
