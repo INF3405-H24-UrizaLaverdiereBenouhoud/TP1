@@ -97,6 +97,10 @@ public class Server {
     private static void loadMessagesAndAccounts() {
         Message.loadMessages();
 //        Message.loadAccounts();
+        serverLogger.info("Messages and accounts loaded");
+        try {
+            Thread.sleep(125);
+        } catch (InterruptedException e) {}
     }
 
     public static void main(String[] args) throws Exception {
@@ -105,11 +109,6 @@ public class Server {
         File messagesFile = new File(args[1]);
         setupAccountsMessagesFiles(accountsFile, messagesFile);
         loadMessagesAndAccounts();
-
-        for (Message message : Message.getUpToLast15Messages()) {
-            System.out.println(message);
-        }
-
 
         InetAddress serverIP = promptForIpAddress();
         int serverPort = promptForPort();

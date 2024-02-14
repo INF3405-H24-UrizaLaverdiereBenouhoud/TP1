@@ -116,7 +116,7 @@ public class MainClient {
     }
 
     private static void retrieveHistoric() {
-        System.out.println("Retrieving historic of messages... ");
+        mainClientLogger.info("Retrieving historic of messages... ");
         try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             out.writeByte(1);
@@ -126,7 +126,11 @@ public class MainClient {
                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 String message = in.readLine();
                 if(message != null)
-                    System.out.println(message);
+                    if(message.equals("historic-end")) {
+                        mainClientLogger.info("Retrieved end of historic of messages signal from server");
+                        break;
+                    } else
+                        System.out.println(message);
             }
         } catch (IOException e) {
             MainClient.mainClientLogger.severe("IOException when trying to retrieve historic");

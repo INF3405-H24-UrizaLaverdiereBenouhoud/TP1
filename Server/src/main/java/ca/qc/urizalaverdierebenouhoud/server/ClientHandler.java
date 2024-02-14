@@ -80,6 +80,10 @@ public class ClientHandler extends Thread {
                     out.newLine();
                     out.flush();
                 }
+                clientHandlerLogger.info("Sent recent history to client #" + clientNumber);
+                out.write("historic-end");
+                out.newLine();
+                out.flush();
             } // send recent history
             case 2 -> { // client sent message
                 readMessage(in);
