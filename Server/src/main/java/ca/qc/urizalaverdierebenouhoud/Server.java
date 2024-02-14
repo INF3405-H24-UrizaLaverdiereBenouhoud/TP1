@@ -1,6 +1,7 @@
 package ca.qc.urizalaverdierebenouhoud;
 
 import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
+import ca.qc.urizalaverdierebenouhoud.message.Message;
 import ca.qc.urizalaverdierebenouhoud.server.ClientHandler;
 import java.io.*;
 import java.net.InetAddress;
@@ -12,6 +13,8 @@ import java.util.Scanner;
 import static ca.qc.urizalaverdierebenouhoud.validate.IPAddress.isValidIpAddress;
 
 public class Server {
+
+    private static final String PROGRAM_USAGE = "Usage: java -jar Server.jar <path/to/accounts.json> <path/to/messages.json'";
 
     private static final INF3405Logger serverLogger = new INF3405Logger("Server", null);
 
@@ -66,7 +69,48 @@ public class Server {
         return port;
     }
 
+    /**
+     *  Validates that the provided command line arguments are correct
+     *   <br>Usage: java -jar Server.jar <path/to/accounts.json> <path/to/messages.json>
+     * @param args the command line arguments
+     */
+    private static void validateArgs(String[] args) {
+        if (args.length != 2) {
+            serverLogger.severe(PROGRAM_USAGE);
+            System.exit(1);
+        }
+
+        for (String arg : args) {
+            File file = new File(arg);
+            if (!file.exists() || file.isDirectory()) {
+                serverLogger.severe("Invalid file path: " + arg);
+                System.exit(1);
+            }
+        }
+    }
+
+    private static void setupAccountsMessagesFiles(File accountsFile, File messagesFile) {
+        System.setProperty("accountsFile", accountsFile.getAbsolutePath());
+        Message.setMessagesFile(messagesFile);
+    }
+
+    private static void loadMessagesAndAccounts() {
+        Message.loadMessages();
+//        Message.loadAccounts();
+    }
+
     public static void main(String[] args) throws Exception {
+        validateArgs(args);
+        File accountsFile = new File(args[0]);
+        File messagesFile = new File(args[1]);
+        setupAccountsMessagesFiles(accountsFile, messagesFile);
+        loadMessagesAndAccounts();
+
+        for (Message message : Message.getUpToLast15Messages()) {
+            System.out.println(message);
+        }
+
+
         InetAddress serverIP = promptForIpAddress();
         int serverPort = promptForPort();
 

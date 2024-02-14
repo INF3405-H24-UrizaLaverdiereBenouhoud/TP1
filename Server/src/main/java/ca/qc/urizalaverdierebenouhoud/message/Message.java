@@ -17,12 +17,18 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class Message implements Comparable<Message> {
+
+    private static File messagesFile;
     private static final Logger messageLogger = Logger.getLogger(Message.class.getName());
     public static List<Message> messages = new ArrayList<>();
 
     private final Client author;
     private LocalDateTime time;
     private String content;
+
+    public static void setMessagesFile(File messagesFile) {
+        Message.messagesFile = messagesFile;
+    }
 
     public Client getAuthor() {
         return author;
@@ -42,9 +48,8 @@ public class Message implements Comparable<Message> {
 
     /**
      *  Loads messages from a JSON file
-     * @param file The JSON file to load messages from
      */
-    public static void loadMessages(File file) {
+    public static void loadMessages() {
         /*
             Define a Message as the following JSON Object:
             Reminder: a message is printed as [Utilisateur 1 - 132.207.29.107:46202 - 2017-10-13@13:02:01]: Salut Utilisateur 2 !
@@ -66,20 +71,20 @@ public class Message implements Comparable<Message> {
 
         String fileContent;
         try {
-            fileContent = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-            attemptToParseJSON(file, gson, fileContent);
+            fileContent = new String(Files.readAllBytes(Paths.get(Message.messagesFile.getAbsolutePath())));
+            attemptToParseJSON(gson, fileContent);
         } catch (IOException e) {
-            Message.messageLogger.severe("File" + file.getAbsolutePath() + " couldn't be read");
+            Message.messageLogger.severe("File" + Message.messagesFile.getAbsolutePath() + " couldn't be read");
             System.exit(1);
         }
     }
 
-    private static void attemptToParseJSON(File file, Gson gson, String fileContent) {
+    private static void attemptToParseJSON(Gson gson, String fileContent) {
         try {
             Message[] loadedMessages = gson.fromJson(fileContent, Message[].class);
             Message.messages = new ArrayList<>(Arrays.asList(loadedMessages));
         } catch (JsonSyntaxException jsonSyntaxException) {
-            Message.messageLogger.severe("File" + file.getAbsolutePath() + " is not a valid JSON file");
+            Message.messageLogger.severe("File" + Message.messagesFile.getAbsolutePath() + " is not a valid JSON file");
             System.exit(1);
         }
     }
@@ -89,20 +94,23 @@ public class Message implements Comparable<Message> {
      * @return The last 15 messages, or less if there are less than 15 messages
      */
     public static Message[] getUpToLast15Messages() {
+        Message.messages.sort(Message::compareTo);
         int numberOfMessages = Message.messages.size();
         int numberOfMessagesToReturn = Math.min(numberOfMessages, 15);
+
         Message[] messagesToReturn = new Message[numberOfMessagesToReturn];
+
         for (int i = 0; i < numberOfMessagesToReturn; i++) {
             messagesToReturn[i] = Message.messages.get(numberOfMessages - numberOfMessagesToReturn + i);
         }
+
         return messagesToReturn;
     }
 
     /**
      *  Saves messages to a JSON file
-     * @param file The JSON file to save messages to
      */
-    public static void saveMessages(File file) {
+    public static void saveMessages() {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
                 .setPrettyPrinting()
@@ -110,9 +118,9 @@ public class Message implements Comparable<Message> {
 
         String json = gson.toJson(Message.messages);
         try {
-            Files.writeString(Paths.get(file.getAbsolutePath()), json);
+            Files.writeString(Paths.get(Message.messagesFile.getAbsolutePath()), json);
         } catch (IOException e) {
-            Message.messageLogger.severe("File" + file.getAbsolutePath() + " couldn't be written");
+            Message.messageLogger.severe("File" + Message.messagesFile.getAbsolutePath() + " couldn't be written");
             System.exit(1);
         }
     }
@@ -125,6 +133,10 @@ public class Message implements Comparable<Message> {
         this.author = author;
         this.time = time;
         this.content = content;
+
+        Message.messages.sort(Message::compareTo);
+        Message.saveMessages();
+        messageLogger.info("Saved message to " + Message.messagesFile.getAbsolutePath());
     }
 
     @Override
