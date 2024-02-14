@@ -13,6 +13,8 @@ import java.util.logging.Logger;
  */
 public class INF3405Logger extends Logger {
 
+    private final String className;
+
     /**
      * Protected method to construct a logger for a named subsystem.
      * <p>
@@ -24,16 +26,15 @@ public class INF3405Logger extends Logger {
      *                           be based on the package name or class name
      *                           of the subsystem, such as java.net
      *                           or javax.swing.  It may be null for anonymous Loggers.
-     * @param resourceBundleName name of ResourceBundle to be used for localizing
-     *                           messages for this logger.  May be null if none
-     *                           of the messages require localization.
+     * @param className         The name of the class that will use this logger
      * @throws MissingResourceException if the resourceBundleName is non-null and
      *                                  no corresponding resource can be found.
      */
-    public INF3405Logger(String name, String resourceBundleName) {
-        super(name, resourceBundleName);
+    public INF3405Logger(String name, String className) {
+        super(name, null);
+        this.className = className;
         ConsoleHandler consoleHandler = new ConsoleHandler();
-        consoleHandler.setFormatter(new INF3405Formatter());
+        consoleHandler.setFormatter(new INF3405Formatter(className));
         addHandler(consoleHandler);
     }
 
@@ -41,7 +42,14 @@ public class INF3405Logger extends Logger {
      *  A custom formatter for the logger
      */
     private static class INF3405Formatter extends Formatter {
-        private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        private final String className;
+
+        public INF3405Formatter(String className) {
+            this.className = className;
+        }
+
+        private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:sss");
 
         @Override
         public String format(LogRecord logRecord) {
@@ -61,7 +69,7 @@ public class INF3405Logger extends Logger {
             }
             String resetColor = "\u001B[0m";
             Date date = new Date(logRecord.getMillis());
-            return color + "(" + this.dateFormat.format(date) + ") [" + logRecord.getLevel() + "] " + logRecord.getMessage() + resetColor + "\n";
+            return color + "(" + this.dateFormat.format(date) + ") " + this.className + " [" + logRecord.getLevel() + "] " + logRecord.getMessage() + resetColor + "\n";
         }
     }
 }

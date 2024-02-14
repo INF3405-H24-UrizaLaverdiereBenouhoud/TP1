@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ClientHandler extends Thread {
 
-    private static final INF3405Logger clientHandlerLogger = new INF3405Logger("ClientHandler", null);
+    private static final INF3405Logger clientHandlerLogger = new INF3405Logger("ClientHandler", ClientHandler.class.getName());
     private final  Socket client;
     protected static final List<ClientHandler> handlers = new ArrayList<>();
     private boolean isRunning;

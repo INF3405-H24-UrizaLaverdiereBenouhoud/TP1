@@ -16,7 +16,7 @@ public class Server {
 
     private static final String PROGRAM_USAGE = "Usage: java -jar Server.jar <path/to/accounts.json> <path/to/messages.json'";
 
-    private static final INF3405Logger serverLogger = new INF3405Logger("Server", null);
+    private static final INF3405Logger serverLogger = new INF3405Logger("Server", Server.class.getName());
 
     private static final String DEFAULT_IP_ADDRESS = "0.0.0.0";
     private static final int DEFAULT_PORT = 5003;

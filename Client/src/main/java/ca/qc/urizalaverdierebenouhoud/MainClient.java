@@ -19,7 +19,7 @@ import static ca.qc.urizalaverdierebenouhoud.validate.IPAddress.isValidIpAddress
 
 public class MainClient {
 
-    private static final INF3405Logger mainClientLogger = new INF3405Logger("MainClient", null);
+    private static final INF3405Logger mainClientLogger = new INF3405Logger("MainClient", MainClient.class.getName());
 
     private static final String DEFAULT_IP_ADDRESS = "0.0.0.0";
     private static final int DEFAULT_PORT = 5003;

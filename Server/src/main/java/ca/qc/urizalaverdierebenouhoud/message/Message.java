@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 public class Message implements Comparable<Message> {
 
     private static File messagesFile;
-    private static final INF3405Logger messageLogger = new INF3405Logger("Message", null);
+    private static final INF3405Logger messageLogger = new INF3405Logger("Message", Message.class.getName());
     public static List<Message> messages = new ArrayList<>();
 
     private final Client author;
