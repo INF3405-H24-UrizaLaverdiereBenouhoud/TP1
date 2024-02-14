@@ -13,8 +13,6 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Scanner;
 
 import static ca.qc.urizalaverdierebenouhoud.validate.IPAddress.isValidIpAddress;
@@ -125,12 +123,14 @@ public class MainClient {
             while (isRunning) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 String message = in.readLine();
-                if(message != null)
-                    if(message.equals("historic-end")) {
+                if(message != null) {
+                    if (message.equals("historic-end")) {
                         mainClientLogger.info("Retrieved end of historic of messages signal from server");
                         break;
-                    } else
+                    } else {
                         System.out.println(message);
+                    }
+                }
             }
         } catch (IOException e) {
             MainClient.mainClientLogger.severe("IOException when trying to retrieve historic");
