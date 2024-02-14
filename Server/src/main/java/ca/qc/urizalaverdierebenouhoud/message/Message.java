@@ -87,6 +87,10 @@ public class Message implements Comparable<Message> {
     private static void attemptToParseJSON(Gson gson, String fileContent) {
         try {
             Message[] loadedMessages = gson.fromJson(fileContent, Message[].class);
+            if (loadedMessages == null) {
+                messageLogger.warning("No messages found in " + Message.messagesFile.getAbsolutePath());
+                return;
+            }
             Message.messages = new ArrayList<>(Arrays.asList(loadedMessages));
         } catch (JsonSyntaxException jsonSyntaxException) {
             Message.messageLogger.severe("File" + Message.messagesFile.getAbsolutePath() + " is not a valid JSON file");
