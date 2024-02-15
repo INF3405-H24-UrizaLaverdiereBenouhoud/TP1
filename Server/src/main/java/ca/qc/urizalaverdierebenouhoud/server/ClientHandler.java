@@ -132,14 +132,15 @@ public class ClientHandler extends Thread {
     private void readMessage(DataInput message) throws IOException  // not sure if this is right
     {
         String text = message.readUTF();
-        Message.saveMessage(Message.parseMessageFromString(text, (Inet4Address) clientSocket.getInetAddress()));
+        Message messageToSend = Message.parseMessageFromString(text, (Inet4Address) clientSocket.getInetAddress());
+        Message.saveMessage(messageToSend);
         if (text.isEmpty())
             return;
         ClientHandler.clientHandlerLogger.info("(" + clientNumber + ")" + text);
         for (ClientHandler handler : handlers) {
-            if (handler.clientSocket != this.clientSocket) {
+            if (handler.clientSocket != this.clientSocket && messageToSend != null) {
                 BufferedWriter out = (new BufferedWriter(new OutputStreamWriter(handler.clientSocket.getOutputStream())));
-                out.write(text);
+                out.write(messageToSend.toString());
                 out.newLine();
                 out.flush();
             }
