@@ -3,6 +3,8 @@ package ca.qc.urizalaverdierebenouhoud;
 import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
 import ca.qc.urizalaverdierebenouhoud.message.Message;
 import ca.qc.urizalaverdierebenouhoud.server.ClientHandler;
+import ca.qc.urizalaverdierebenouhoud.users.Account;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -90,7 +92,7 @@ public class Server {
     }
 
     private static void setupAccountsMessagesFiles(File accountsFile, File messagesFile) {
-        System.setProperty("accountsFile", accountsFile.getAbsolutePath());
+        Account.setMessagesFile(accountsFile);
         Message.setMessagesFile(messagesFile);
     }
 

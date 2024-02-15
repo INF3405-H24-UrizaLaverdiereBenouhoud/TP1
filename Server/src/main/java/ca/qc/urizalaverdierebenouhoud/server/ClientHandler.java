@@ -3,6 +3,8 @@ package ca.qc.urizalaverdierebenouhoud.server;
 import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
 import ca.qc.urizalaverdierebenouhoud.message.Message;
 import ca.qc.urizalaverdierebenouhoud.users.Account;
+import ca.qc.urizalaverdierebenouhoud.users.Client;
+import ca.qc.urizalaverdierebenouhoud.users.InvalidUsernamePasswordComboException;
 
 import java.io.*;
 import java.net.Inet4Address;
@@ -13,14 +15,15 @@ import java.util.List;
 public class ClientHandler extends Thread {
 
     private static final INF3405Logger clientHandlerLogger = new INF3405Logger("ClientHandler", ClientHandler.class.getName());
-    private final  Socket client;
+    private static Socket clientSocket;
     protected static final List<ClientHandler> handlers = new ArrayList<>();
     private boolean isRunning;
-    private int clientNumber;
+    private static Client client;
+    private static int clientNumber;
 
     public ClientHandler(Socket socket, int clientNumber) {
-        this.client = socket;
-        ClientHandler.clientHandlerLogger.info("New connection #" + clientNumber + " from " + client.getInetAddress());
+        clientSocket = socket;
+        ClientHandler.clientHandlerLogger.info("New connection #" + clientNumber + " from " + clientSocket.getInetAddress());
     }
 
     @Override
@@ -29,7 +32,7 @@ public class ClientHandler extends Thread {
         handlers.add(this);
         while (isRunning) {
             try {
-                DataInputStream message = new DataInputStream(client.getInputStream());
+                DataInputStream message = new DataInputStream(clientSocket.getInputStream());
                 interpretStreamContent(message);
             } catch (IOException e) {
                 handleError(e);
@@ -57,7 +60,7 @@ public class ClientHandler extends Thread {
         try {
             isRunning = false;
             handlers.remove(this);
-            client.close();
+            clientSocket.close();
             ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " disconnected from server.");
         } catch (IOException ex) {
             ClientHandler.clientHandlerLogger.severe("Error while closing client connection");
@@ -73,23 +76,16 @@ public class ClientHandler extends Thread {
     private void interpretStreamContent(DataInput in) throws IOException, InterruptedException {
         switch (readFirstByte(in)) {
             case 3 -> {
-                try {
-                    String[] loginInfo = in.readUTF().split(" : ");
-                    sendLogginResponse(Account.login(loginInfo[0], loginInfo[1], (Inet4Address) client.getInetAddress(), client.getPort()));
-                }
-                catch (Exception e) {
-
-                }
+                sendLogginResponse(login(in.readUTF().split(" : ")));
             }
             case 1 -> {
                 ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " requested recent history.");
-                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
                 for (Message message : Message.getUpToLast15Messages()) {
                     clientHandlerLogger.info("Sending message (history): " + message.toString());
                     out.write(message.toString());
                     out.newLine();
                     out.flush();
-                    Thread.sleep(100);
                 }
                 clientHandlerLogger.info("Sent recent history to client #" + clientNumber);
                 out.write("historic-end");
@@ -134,8 +130,8 @@ public class ClientHandler extends Thread {
             return;
         ClientHandler.clientHandlerLogger.info("(" + clientNumber + ")" + text);
         for (ClientHandler handler : handlers) {
-            if (handler.client != this.client) {
-                BufferedWriter out = (new BufferedWriter(new OutputStreamWriter(handler.client.getOutputStream())));
+            if (handler.clientSocket != this.clientSocket) {
+                BufferedWriter out = (new BufferedWriter(new OutputStreamWriter(handler.clientSocket.getOutputStream())));
                 out.write(text);
                 out.newLine();
                 out.flush();
@@ -143,9 +139,39 @@ public class ClientHandler extends Thread {
         }
     }
 
+    /**
+     * Takes the accounts defined into the provided JSON file and loads them into
+     * @param loginInfo The username and password of the account to find
+     * @return The Client object corresponding to the account
+     */
+    public static byte login(String[] loginInfo) {
+        String username = loginInfo[0];
+        String password = loginInfo[1];
+        Inet4Address clientIp = (Inet4Address) clientSocket.getInetAddress();
+        int clientPort = clientSocket.getPort();
+        Account clientAccount = new Account(username, password);
+        Account.loadAccounts();
+        List<Account> accounts = Account.getAccounts();
+        for (Account account : accounts) {
+            if (account.getUsername().equals(username)) {
+                if (account.getPassword().equals(password)) {
+                    System.out.println("hi person");
+                    client = new Client(clientAccount, clientIp, clientPort);
+                    return '0';
+                } else {
+                    System.out.println("bad password");
+                    return '2';
+                }
+            }
+        }
+        Account.addAccount(clientAccount);
+        client = new Client(clientAccount, clientIp, clientPort);
+        System.out.println("newAccount");
+        return '1';
+    }
     private void sendLogginResponse(byte task) throws IOException
     {
-        DataOutputStream out = new DataOutputStream(client.getOutputStream());
+        DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
         out.writeByte(task);
         out.flush();
     }

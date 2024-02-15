@@ -20,34 +20,7 @@ public class Account {
     @SerializedName("password")
     private String password;
 
-    /**
-     * Takes the accounts defined into the provided JSON file and loads them into
-     * @param username The username of the account to find
-     * @param password The password of the account to find
-     * @param ipAddress The IP Address of the client
-     * @param port The port of the client
-     * @return The Client object corresponding to the account
-     * @throws InvalidUsernamePasswordComboException If the username/password combo is invalid
-     */
-    public static byte login(String username, String password, Inet4Address ipAddress, int port) {
-        try {
-            for (Account account : Account.accounts) {
-                if (account.getUsername().equals(username)) {
-                    if (account.getPassword().equals(password)) {
-                        System.out.println("hi person");
-                        return '0';
-                    } else {
-                        System.out.println("bad password");
-                        return '2';
-                    }
-                }
-            }
-            accounts.add(new Account(username, password));
-            System.out.println("newAccount");
-            return '1';
-        } catch (Exception e) {}
-        return '3';
-    }
+    private static File accountsFile;
 
     public String getUsername() {
         return username;
@@ -56,14 +29,17 @@ public class Account {
     public String getPassword() {
         return password;
     }
+    public static void setMessagesFile(File accountsFile) {
+        Account.accountsFile = accountsFile;
+    }
 
     /**
      *  Takes the accounts defined into the provided JSON file and loads them into
      *  the accounts ArrayList.
      *  Will make the program exit with 1 code if file couldn't be loaded
-     * @param file The JSON file containing the accounts to load.
      */
-    public static void loadAccounts(File file) {
+
+    public static void loadAccounts() {
         /*
             Define an Account as the following JSON Object:
             {
@@ -75,14 +51,21 @@ public class Account {
 
         String fileContent = null;
         try {
-            fileContent = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
+            fileContent = new String(Files.readAllBytes(Paths.get(accountsFile.getAbsolutePath())));
         } catch (IOException e) {
-            Account.accountLogger.severe("File" + file.getAbsolutePath() + " couldn't be read");
+            Account.accountLogger.severe("File" + accountsFile.getAbsolutePath() + " couldn't be read");
             System.exit(1);
         }
 
         Account[] loadedAccounts = gson.fromJson(fileContent, Account[].class);
         Account.accounts = new ArrayList<>(Arrays.asList(loadedAccounts));
+    }
+
+    public static List<Account> getAccounts(){
+        return accounts;
+    }
+    public static void addAccount(Account clientAccount){
+        accounts.add(clientAccount);
     }
 
     @Override
