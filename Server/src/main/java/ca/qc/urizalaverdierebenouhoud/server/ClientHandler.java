@@ -95,9 +95,12 @@ public class ClientHandler extends Thread {
             case 2 -> { // client sent message
                 readMessage(in);
             }
-            default -> {
+            case 4 -> {
                 ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " disconnected from server by request.");
                 closeClientConnection();
+            }
+            default -> {
+                ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " disconnected from server unexpectedly.");
             }
         }
     }
