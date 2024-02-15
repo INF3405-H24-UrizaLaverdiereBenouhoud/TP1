@@ -97,7 +97,6 @@ public class MainClient {
             baseClient = new Client(account, (Inet4Address) serverIpAddress, serverPort);
 
             try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
-                mainClientLogger.info("Successfully connected to server");
 
                 sendLoginInfo(client, scanner);
 
