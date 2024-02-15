@@ -159,18 +159,18 @@ public class ClientHandler extends Thread {
         for (Account account : accounts) {
             if (account.getUsername().equals(username)) {
                 if (account.getPassword().equals(password)) {
-                    System.out.println("hi person");
+                    ClientHandler.clientHandlerLogger.info("existing user is now connected");
                     client = new Client(clientAccount, clientIp, clientPort);
                     return '0';
                 } else {
-                    System.out.println("bad password");
+                    ClientHandler.clientHandlerLogger.info("incorrect password");
                     return '2';
                 }
             }
         }
         Account.saveAccount(clientAccount);
         client = new Client(clientAccount, clientIp, clientPort);
-        System.out.println("newAccount");
+        ClientHandler.clientHandlerLogger.info("newAccount");
         return '1';
     }
     private void sendLogginResponse(byte task) throws IOException
