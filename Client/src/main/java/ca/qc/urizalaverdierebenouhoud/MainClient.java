@@ -110,8 +110,6 @@ public class MainClient {
                 retrieveHistoric(client);
 
                 //send message TODO: need to implement return from server
-                System.out.println("Pour quitter, entrer «exit» dans le terminal puis appuyez sur entrer.");
-                chatRoomFunctionalities(client, scanner);
             }
 
 
@@ -171,7 +169,9 @@ public class MainClient {
         }
         //Display historic
         authentification(client, scanner);
+        System.out.println("Pour quitter, entrer «exit» dans le terminal puis appuyez sur entrer.");
         chatRoomFunctionalities(client, scanner);
+
     }
 
     ////////////////////////////////////////////////////////
