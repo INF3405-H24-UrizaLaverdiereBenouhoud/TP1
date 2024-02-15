@@ -18,5 +18,17 @@
   {
     "username": "allo",
     "password": "allo"
+  },
+  {
+    "username": "g",
+    "password": "g"
+  },
+  {
+    "username": "a",
+    "password": "a"
+  },
+  {
+    "username": "exit",
+    "password": "exit"
   }
 ]

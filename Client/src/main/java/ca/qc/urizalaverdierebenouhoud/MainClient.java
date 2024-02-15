@@ -164,8 +164,9 @@ public class MainClient {
 
         //Display historic
         authentification(client);
+        System.out.println("--------------------");
+        chatRoomFunctionalities(client, scanner);
     }
-
 
     ////////////////////////////////////////////////////////
     //Milestone in connection
@@ -253,6 +254,7 @@ public class MainClient {
                     switch (task) {
                         case '0' -> {
                             System.out.println("Bienvenue " + baseClient.getUsername());
+                            isNotAuthentified = false;
                         }
                         case '1' -> {
                             System.out.println("Compte créé");
