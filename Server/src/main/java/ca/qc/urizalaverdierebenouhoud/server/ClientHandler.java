@@ -18,7 +18,6 @@ public class ClientHandler extends Thread {
     private static Socket clientSocket;
     protected static final List<ClientHandler> handlers = new ArrayList<>();
     private boolean isRunning;
-    private static Client client;
     private static int clientNumber;
 
     public ClientHandler(Socket socket, int clientNumber) {
@@ -76,7 +75,7 @@ public class ClientHandler extends Thread {
     private void interpretStreamContent(DataInput in) throws IOException, InterruptedException {
         switch (readFirstByte(in)) {
             case 3 -> {
-                sendLogginResponse(login(in.readUTF().split(" : ")));
+                sendLogginResponse(login(in.readUTF()));
             }
             case 1 -> {
                 ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " requested recent history.");
@@ -144,9 +143,11 @@ public class ClientHandler extends Thread {
      * @param loginInfo The username and password of the account to find
      * @return The Client object corresponding to the account
      */
-    public static byte login(String[] loginInfo) {
-        String username = loginInfo[0];
-        String password = loginInfo[1];
+    public static byte login(String loginInfo) {
+        String[] splitLoginInfo = loginInfo.split("]: ");
+        String[] userAndPassword = splitLoginInfo[1].split(" : ");
+        String username = userAndPassword[0];
+        String password = userAndPassword[1];
         Inet4Address clientIp = (Inet4Address) clientSocket.getInetAddress();
         int clientPort = clientSocket.getPort();
 
@@ -154,6 +155,7 @@ public class ClientHandler extends Thread {
         Account.loadAccounts();
         List<Account> accounts = Account.getAccounts();
 
+        Client client;
         for (Account account : accounts) {
             if (account.getUsername().equals(username)) {
                 if (account.getPassword().equals(password)) {
