@@ -170,9 +170,9 @@ public class MainClient {
         //Display historic
         authentification(client, scanner);
         System.out.println("Pour quitter, entrer «exit» dans le terminal puis appuyez sur entrer.");
+        chatRoomFunctionalities(client, scanner);
 
     }
-
 
     ////////////////////////////////////////////////////////
     //Milestone in connection
@@ -259,6 +259,7 @@ public class MainClient {
                     switch (task) {
                         case '0' -> {
                             System.out.println("Bienvenue " + baseClient.getUsername());
+                            isNotAuthentified = false;
                         }
                         case '1' -> {
                             System.out.println("Compte créé");

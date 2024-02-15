@@ -4,7 +4,6 @@ import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
 import ca.qc.urizalaverdierebenouhoud.message.Message;
 import ca.qc.urizalaverdierebenouhoud.users.Account;
 import ca.qc.urizalaverdierebenouhoud.users.Client;
-import ca.qc.urizalaverdierebenouhoud.users.InvalidUsernamePasswordComboException;
 
 import java.io.*;
 import java.net.Inet4Address;
@@ -29,6 +28,18 @@ public class ClientHandler extends Thread {
     public void run() {
         isRunning = true;
         handlers.add(this);
+
+        new Thread(() -> {
+            while (isRunning)
+                try {
+                    clientSocket.getOutputStream();
+                } catch (Exception e) {
+                    ClientHandler.clientHandlerLogger.info("Disconnected");
+                    handleError(e);
+                }
+        }).start();
+
+
         while (isRunning) {
             try {
                 DataInputStream message = new DataInputStream(clientSocket.getInputStream());
@@ -44,6 +55,7 @@ public class ClientHandler extends Thread {
 
     /**
      * Handles an error
+     *
      * @param e the error to handle
      */
     private void handleError(Exception e) {
@@ -69,6 +81,7 @@ public class ClientHandler extends Thread {
 
     /**
      * Interprets the content of the input stream
+     *
      * @param in the input stream to interpret
      * @throws IOException if an I/O error occurs
      */
@@ -103,6 +116,7 @@ public class ClientHandler extends Thread {
 
     /**
      * Reads the first byte of the input stream
+     *
      * @param in the input stream to read from
      * @return the first byte of the input stream
      */
@@ -118,6 +132,7 @@ public class ClientHandler extends Thread {
 
     /**
      * Reads a message from the client and sends it to all other clients
+     *
      * @param message the message to read
      * @throws IOException if an I/O error occurs
      */
@@ -140,6 +155,7 @@ public class ClientHandler extends Thread {
 
     /**
      * Takes the accounts defined into the provided JSON file and loads them into
+     *
      * @param loginInfo The username and password of the account to find
      * @return The Client object corresponding to the account
      */
@@ -173,8 +189,8 @@ public class ClientHandler extends Thread {
         ClientHandler.clientHandlerLogger.info("newAccount");
         return '1';
     }
-    private void sendLogginResponse(byte task) throws IOException
-    {
+
+    private void sendLogginResponse(byte task) throws IOException {
         DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
         out.writeByte(task);
         out.flush();
