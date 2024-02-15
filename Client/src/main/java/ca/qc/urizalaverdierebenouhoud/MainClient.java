@@ -102,12 +102,12 @@ public class MainClient {
                 //enter username
                 sendLoginInfo(client, scanner);
                 //enter password
+                retrieveHistoric(client);
 
                 //if user does not exist add to DB
-
+                chatRoomFunctionalities(client, scanner);
                 //Display historic
 
-                retrieveHistoric(client);
 
                 //send message TODO: need to implement return from server
             }
@@ -170,8 +170,6 @@ public class MainClient {
         //Display historic
         authentification(client, scanner);
         System.out.println("Pour quitter, entrer «exit» dans le terminal puis appuyez sur entrer.");
-        chatRoomFunctionalities(client, scanner);
-
     }
 
     ////////////////////////////////////////////////////////
