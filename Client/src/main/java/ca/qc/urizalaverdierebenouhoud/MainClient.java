@@ -98,23 +98,18 @@ public class MainClient {
 
             try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
                 mainClientLogger.info("Successfully connected to server");
-                //login
-                //enter username
+
                 sendLoginInfo(client, scanner);
-                //enter password
+
                 retrieveHistoric(client);
 
-                //if user does not exist add to DB
                 chatRoomFunctionalities(client, scanner);
-                //Display historic
-
-
-                //send message TODO: need to implement return from server
             }
 
 
         } catch (Exception e) {
-            //throw new RuntimeException(e);
+            isRunning = false;
+            mainClientLogger.severe("Error while connecting to server");
         }
     }
 

@@ -101,6 +101,7 @@ public class ClientHandler extends Thread {
             }
             default -> {
                 ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " disconnected from server unexpectedly.");
+                closeClientConnection();
             }
         }
     }
