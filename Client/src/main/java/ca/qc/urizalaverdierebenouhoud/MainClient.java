@@ -245,10 +245,10 @@ public class MainClient {
     }
 
     private static void authentification(Socket client){
-        new Thread(() -> {
             try {
+                boolean isNotAuthentified = true;
                 DataInputStream in = new DataInputStream(client.getInputStream());
-                while (isRunning) {
+                while (isNotAuthentified) {
                     byte task = in.readByte();
                     switch (task) {
                         case '0' -> {
@@ -257,6 +257,7 @@ public class MainClient {
                         case '1' -> {
                             System.out.println("Compte créé");
                             System.out.println("Bienvenue " + baseClient.getUsername());
+                            isNotAuthentified = false;
                         }
                         case '2' -> {
                             System.out.println("Mot de passe invalide, veuiller réessayer.");
@@ -266,8 +267,5 @@ public class MainClient {
             } catch (IOException e) {
                 isRunning = false;
             }
-        }).start();
     }
-
-
 }
