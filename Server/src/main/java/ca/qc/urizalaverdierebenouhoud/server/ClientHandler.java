@@ -28,27 +28,15 @@ public class ClientHandler extends Thread {
     public void run() {
         isRunning = true;
         handlers.add(this);
-
-        new Thread(() -> {
-            while (isRunning)
-                try {
-                    clientSocket.getOutputStream();
-                } catch (Exception e) {
-                    ClientHandler.clientHandlerLogger.info("Disconnected");
-                    handleError(e);
-                }
-        }).start();
-
-
+        try {
+        DataInputStream message = new DataInputStream(clientSocket.getInputStream());
         while (isRunning) {
-            try {
-                DataInputStream message = new DataInputStream(clientSocket.getInputStream());
                 interpretStreamContent(message);
-            } catch (IOException e) {
-                handleError(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        }
+        } catch (IOException e) {
+            handleError(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         ClientHandler.clientHandlerLogger.info("Disconnected");
     }
@@ -107,7 +95,7 @@ public class ClientHandler extends Thread {
             case 2 -> { // client sent message
                 readMessage(in);
             }
-            case 4 -> {
+            default -> {
                 ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " disconnected from server by request.");
                 closeClientConnection();
             }
