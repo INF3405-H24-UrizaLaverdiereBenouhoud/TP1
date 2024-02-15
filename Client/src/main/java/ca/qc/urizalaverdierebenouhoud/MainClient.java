@@ -136,22 +136,27 @@ public class MainClient {
         }
     }
 
-    private static void sendLoginInfo(Socket client,Scanner scanner){
-        //login
-        System.out.println("Enter username :");
-        String username = scanner.nextLine();
-        username = username.replaceAll("\\s", "");
-        username = username.replaceAll(":", "");
+    private static void sendLoginInfo(Socket client,Scanner scanner) {
+        String username, password;
 
-        System.out.println("Provide password:");
-        String password = scanner.nextLine();
-        password = password.replaceAll("\\s", "");
-        password = password.replaceAll(":", "");
+        System.out.println("Enter username:");
+        username = scanner.nextLine();
+        while (username.contains(" ")||username.contains(":") || username.isEmpty()) {
+            System.out.println("Please refrain from including spaces and colons in username. \n Enter username again:");
+            username = scanner.nextLine();
+        }
 
-        Inet4Address address = (Inet4Address) client.getInetAddress();
-        int port = client.getPort();
-        Account account = new Account(username, password);
-        baseClient = new Client(account, address, port);
+        System.out.println("Enter password:");
+        password = scanner.nextLine();
+        while (password.contains(" ") || password.contains(":") || password.isEmpty()) {
+            System.out.println("Please refrain from including spaces and colons in password. \n Enter password again:");
+            password = scanner.nextLine();
+        }
+
+            Inet4Address address = (Inet4Address) client.getInetAddress();
+            int port = client.getPort();
+            Account account = new Account(username, password);
+            baseClient = new Client(account, address, port);
 
         try {
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
