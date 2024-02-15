@@ -82,9 +82,22 @@ public class Server {
 
         for (String arg : args) {
             File file = new File(arg);
-            if (!file.exists() || file.isDirectory()) {
-                serverLogger.severe("Invalid file path: " + arg);
+            serverLogger.info("Checking file " + file.getAbsolutePath());
+            if (file.isDirectory()) {
+                serverLogger.severe("File " + file.getAbsolutePath() + " is a directory");
                 System.exit(1);
+            } else if (!file.exists()) {
+                serverLogger.info("File " + file.getAbsolutePath() + " doesn't exist");
+                try {
+                    if (!file.createNewFile()) {
+                        serverLogger.severe("File " + file.getAbsolutePath() + " couldn't be created");
+                        System.exit(1);
+                    }
+                } catch (IOException e) {
+                    serverLogger.severe("File " + file.getAbsolutePath() + " couldn't be created: " + e.getMessage());
+                    System.exit(1);
+                }
+                serverLogger.info("File " + file.getAbsolutePath() + " created");
             }
         }
     }
