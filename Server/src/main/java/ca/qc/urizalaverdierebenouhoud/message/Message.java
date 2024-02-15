@@ -127,7 +127,7 @@ public class Message implements Comparable<Message> {
 
         String json = gson.toJson(Message.messages);
         try {
-            Files.writeString(Paths.get(Message.messagesFile.getAbsolutePath()), json);
+            Files.write(Paths.get(Message.messagesFile.getAbsolutePath()), json.getBytes());
         } catch (IOException e) {
             Message.messageLogger.severe("File" + Message.messagesFile.getAbsolutePath() + " couldn't be written");
             System.exit(1);

@@ -31,7 +31,7 @@ public class Client {
 
     @Override
     public String toString() {
-        return this.getUsername() + " - " + this.getIpAddress().toString().replace("/", "") + ":" + this.getPort();
+        return this.getUsername() + " - " + this.getIpAddress().getHostAddress() + ":" + this.getPort();
     }
 
     /**

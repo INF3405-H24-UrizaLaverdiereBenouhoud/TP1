@@ -4,18 +4,14 @@ import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
 import ca.qc.urizalaverdierebenouhoud.message.Message;
 import ca.qc.urizalaverdierebenouhoud.users.Account;
 import ca.qc.urizalaverdierebenouhoud.users.Client;
+import ca.qc.urizalaverdierebenouhoud.validate.IPAddress;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.util.Scanner;
-
-import static ca.qc.urizalaverdierebenouhoud.validate.IPAddress.isValidIpAddress;
 
 public class MainClient {
 
@@ -26,9 +22,12 @@ public class MainClient {
     public static final int MAX_MESSAGE_LENGTH = 200;
     public static final int EXIT_CODE_MESSAGE = 4;
     private static boolean isRunning = true;
+    private static InetAddress serverIpAddress;
+    private static int serverPort;
 
     /**
      * Checks if the given port is valid (between 5000 and 5050)
+     *
      * @param port the port to check
      * @return true if the port is valid, false otherwise
      */
@@ -38,6 +37,7 @@ public class MainClient {
 
     /**
      * Prompts the user for an IP address
+     *
      * @return the IP address entered by the user
      * @throws IOException if an I/O error occurs
      */
@@ -48,7 +48,7 @@ public class MainClient {
         if (ipAddress.isEmpty()) {
             ipAddress = DEFAULT_IP_ADDRESS;
         }
-        if(!isValidIpAddress(ipAddress)) {
+        if (!IPAddress.isValidIpAddress(ipAddress)) {
             MainClient.mainClientLogger.severe("Invalid IP address");
             System.exit(1);
         }
@@ -57,6 +57,7 @@ public class MainClient {
 
     /**
      * Prompts the user for a port
+     *
      * @return the port entered by the user
      * @throws IOException if an I/O error occurs
      */
@@ -80,14 +81,15 @@ public class MainClient {
         System.exit(1);
         return port;
     }
+
     private static Client baseClient;
 
     public static void main(String[] args) throws IOException {
-        InetAddress serverIpAddress = promptForIpAddress();
-        int serverPort = promptForPort();
-
+        serverIpAddress = promptForIpAddress();
+        serverPort = promptForPort();
         try {
 
+            //send message TODO: need to implement return from server
             Scanner scanner = new Scanner(System.in);
 
             //validation
@@ -95,27 +97,18 @@ public class MainClient {
             baseClient = new Client(account, (Inet4Address) serverIpAddress, serverPort);
 
             try (Socket client = new Socket(baseClient.getIpAddress(), baseClient.getPort())) {
-                mainClientLogger.info("Successfully connected to server");
-                //login
-                //enter username
 
-                //enter password
-
-                //if user does not exist add to DB
-
-                //Display historic
+                sendLoginInfo(client, scanner);
 
                 retrieveHistoric(client);
 
-                //send message TODO: need to implement return from server
                 chatRoomFunctionalities(client, scanner);
             }
 
 
-        }
-        catch (Exception e)
-        {
-            //throw new RuntimeException(e);
+        } catch (Exception e) {
+            isRunning = false;
+            mainClientLogger.severe("Error while connecting to server");
         }
     }
 
@@ -128,7 +121,7 @@ public class MainClient {
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             while (isRunning) {
                 String message = in.readLine();
-                if(message != null) {
+                if (message != null) {
                     if (message.equals("historic-end")) {
                         mainClientLogger.info("Retrieved end of historic of messages signal from server");
                         break;
@@ -143,26 +136,58 @@ public class MainClient {
         }
     }
 
+    private static void sendLoginInfo(Socket client,Scanner scanner){
+        //login
+        System.out.println("Enter username :");
+        String username = scanner.nextLine();
+        username = username.replaceAll("\\s", "");
+        username = username.replaceAll(":", "");
+
+        System.out.println("Provide password:");
+        String password = scanner.nextLine();
+        password = password.replaceAll("\\s", "");
+        password = password.replaceAll(":", "");
+
+        Inet4Address address = (Inet4Address) client.getInetAddress();
+        int port = client.getPort();
+        Account account = new Account(username, password);
+        baseClient = new Client(account, address, port);
+
+        try {
+            DataOutputStream out = new DataOutputStream(client.getOutputStream());
+            encodeAndSend(3, out, username + " : " + password);
+        }  catch (IOException e) {
+            MainClient.mainClientLogger.severe("IOException when trying to send out to server");
+            isRunning = false;
+            System.exit(1);
+        }
+        //Display historic
+        authentification(client, scanner);
+        System.out.println("Pour quitter, entrer «exit» dans le terminal puis appuyez sur entrer.");
+    }
+
+    ////////////////////////////////////////////////////////
+    //Milestone in connection
+    ////////////////////////////////////////////////////////
+
     /**
      * Chat room functionalities
      *
-     * @param client
      * @param scanner the scanner to read user input
      */
-    private static void chatRoomFunctionalities(Socket client, Scanner scanner)
-    {
+    private static void chatRoomFunctionalities(Socket client, Scanner scanner) {
         isRunning = true;
         try {
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
             listen(client);
             while (isRunning) {
                 String message = scanner.nextLine();
-                if(message.equals("exit")) {
+                if (message.equals("exit")) {
                     isRunning = false;
                     out.writeByte(EXIT_CODE_MESSAGE);
                     out.flush();
                 } else {
-                    if((!message.isEmpty()) && message.length() <= MAX_MESSAGE_LENGTH)
+                    if ((!message.isEmpty()) && message.length() <= MAX_MESSAGE_LENGTH)
                         sendMessageToChat(out, message);
                 }
             }
@@ -176,10 +201,10 @@ public class MainClient {
         new Thread(() -> {
 
             try {
-                BufferedReader in  = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 while (isRunning) {
                     String message = in.readLine();
-                    if(message != null)
+                    if (message != null)
                         System.out.println(message);
                 }
             } catch (IOException e) {
@@ -190,25 +215,21 @@ public class MainClient {
         }).start();
     }
 
-    private static void sendMessageToChat(DataOutputStream out, String message)
-    {
-        encodeAndSend(2,out, message);
+    private static void sendMessageToChat(DataOutputStream out, String message) {
+        encodeAndSend(2, out, message);
     }
 
-    private static void encodeAndSend(int task, DataOutputStream out, String message)
-    {
+    private static void encodeAndSend(int task, DataOutputStream out, String message) {
         try {
             out.writeByte(task);
-            sendMessage(out,message);
-        }
-        catch (IOException e)
-        {
+            sendMessage(out, message);
+        } catch (IOException e) {
             MainClient.mainClientLogger.warning("Error while encoding and sending message");
             MainClient.mainClientLogger.warning(e.getMessage());
         }
     }
-    private static void sendMessage(DataOutputStream out, String message)
-    {
+
+    private static void sendMessage(DataOutputStream out, String message) {
         try {
             if (message.isEmpty())
                 return;
@@ -221,6 +242,32 @@ public class MainClient {
         }
     }
 
-
-
+    private static void authentification(Socket client, Scanner scanner){
+            try {
+                boolean isNotAuthentified = true;
+                DataInputStream in = new DataInputStream(client.getInputStream());
+                while (isNotAuthentified) {
+                    byte task = in.readByte();
+                    switch (task) {
+                        case '0':
+                            System.out.println("Bienvenue " + baseClient.getUsername());
+                            isNotAuthentified = false;
+                            break;
+                        case '1':
+                            System.out.println("Compte créé");
+                            System.out.println("Bienvenue " + baseClient.getUsername());
+                            isNotAuthentified = false;
+                            break;
+                        case '2':
+                            System.out.println("Mot de passe invalide, veuiller réessayer.");
+                            sendLoginInfo(client, scanner);
+                            break;
+                    }
+                }
+            } catch (IOException e) {
+                MainClient.mainClientLogger.severe("IOException when trying to read server return");
+                isRunning = false;
+                System.exit(1);
+            }
+    }
 }
