@@ -92,7 +92,7 @@ public class Server {
     }
 
     private static void setupAccountsMessagesFiles(File accountsFile, File messagesFile) {
-        Account.setMessagesFile(accountsFile);
+        Account.setAccountFile(accountsFile);
         Message.setMessagesFile(messagesFile);
     }
 

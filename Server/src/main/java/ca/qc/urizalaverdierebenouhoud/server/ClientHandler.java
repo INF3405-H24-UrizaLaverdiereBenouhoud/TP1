@@ -149,9 +149,11 @@ public class ClientHandler extends Thread {
         String password = loginInfo[1];
         Inet4Address clientIp = (Inet4Address) clientSocket.getInetAddress();
         int clientPort = clientSocket.getPort();
+
         Account clientAccount = new Account(username, password);
         Account.loadAccounts();
         List<Account> accounts = Account.getAccounts();
+
         for (Account account : accounts) {
             if (account.getUsername().equals(username)) {
                 if (account.getPassword().equals(password)) {
@@ -164,7 +166,7 @@ public class ClientHandler extends Thread {
                 }
             }
         }
-        Account.addAccount(clientAccount);
+        Account.saveAccount(clientAccount);
         client = new Client(clientAccount, clientIp, clientPort);
         System.out.println("newAccount");
         return '1';

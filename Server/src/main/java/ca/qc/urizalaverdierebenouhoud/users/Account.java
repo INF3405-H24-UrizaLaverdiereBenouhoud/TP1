@@ -1,12 +1,10 @@
 package ca.qc.urizalaverdierebenouhoud.users;
 
-import ca.qc.urizalaverdierebenouhoud.message.Message;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.*;
-import java.net.Inet4Address;
-import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -29,7 +27,7 @@ public class Account {
     public String getPassword() {
         return password;
     }
-    public static void setMessagesFile(File accountsFile) {
+    public static void setAccountFile(File accountsFile) {
         Account.accountsFile = accountsFile;
     }
 
@@ -64,9 +62,6 @@ public class Account {
     public static List<Account> getAccounts(){
         return accounts;
     }
-    public static void addAccount(Account clientAccount){
-        accounts.add(clientAccount);
-    }
 
     @Override
     public String toString() {
@@ -76,6 +71,26 @@ public class Account {
     public Account(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    private static void saveAccounts() {
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
+
+        String json = gson.toJson(Account.accounts);
+        try {
+            Files.writeString(Paths.get(Account.accountsFile.getAbsolutePath()), json);
+        } catch (IOException e) {
+            Account.accountLogger.severe("File" + Account.accountsFile.getAbsolutePath() + " couldn't be written");
+            System.exit(1);
+        }
+    }
+
+    public static void saveAccount(Account account) {
+        Account.accounts.add(account);
+        Account.saveAccounts();
+        accountLogger.info(account.getUsername() + "'s account saved");
     }
 }
 
