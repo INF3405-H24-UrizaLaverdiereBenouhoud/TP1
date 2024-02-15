@@ -128,7 +128,7 @@ public class Server {
 
         ServerSocket server = new ServerSocket(); // initialize server
         //server put on listen
-        try (server) {
+        try {
             startServer(server, serverIP, serverPort);
             int number = 0;
             listenForServerExit(server);

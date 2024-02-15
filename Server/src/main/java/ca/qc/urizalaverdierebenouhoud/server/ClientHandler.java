@@ -68,9 +68,9 @@ public class ClientHandler extends Thread {
      */
     private void interpretStreamContent(DataInput in) throws IOException {
         switch (readFirstByte(in)) {
-            case 3 -> {
-            } //login
-            case 1 -> {
+            case 3: //login
+                break;
+            case 1:
                 ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " requested recent history.");
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
                 for (Message message : Message.getUpToLast15Messages()) {
@@ -83,14 +83,15 @@ public class ClientHandler extends Thread {
                 out.write("historic-end");
                 out.newLine();
                 out.flush();
-            } // send recent history
-            case 2 -> { // client sent message
+                break;
+                // send recent history
+            case 2:// client sent message
                 readMessage(in);
-            }
-            case 4 -> {
+                break;
+            case 4:
                 ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " disconnected from server by request.");
                 closeClientConnection();
-            }
+                break;
         }
     }
 
