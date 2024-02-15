@@ -57,6 +57,10 @@ public class Account {
         }
 
         Account[] loadedAccounts = gson.fromJson(fileContent, Account[].class);
+        if (loadedAccounts == null) {
+            Account.accountLogger.warning("No accounts found in " + accountsFile.getAbsolutePath());
+            return;
+        }
         Account.accounts = new ArrayList<>(Arrays.asList(loadedAccounts));
     }
 
