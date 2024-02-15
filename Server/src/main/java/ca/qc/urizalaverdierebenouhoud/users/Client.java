@@ -46,7 +46,17 @@ public class Client {
         this.port = port;
     }
 
-
+    /**
+     * Constructor for the Client class
+     * @param username the username of the client
+     * @param ipAddress the IP address of the client
+     * @param port the port of the client
+     */
+    public Client(String username, Inet4Address ipAddress, int port) {
+        this.username = username;
+        this.ipAddress = ipAddress;
+        this.port = port;
+    }
 
 
 }

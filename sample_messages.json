@@ -1,6 +1,15 @@
 [
   {
     "author": {
+      "username": "belljimmy",
+      "ipAddress": "192.168.0.22",
+      "port": 46234
+    },
+    "time": "2023-02-24T00:14:41",
+    "content": "C\u0027est quoi le STEP?"
+  },
+  {
+    "author": {
       "username": "cohenmaud",
       "ipAddress": "192.168.0.2",
       "port": 46202
@@ -19,11 +28,20 @@
   },
   {
     "author": {
-      "username": "belljimmy",
-      "ipAddress": "192.168.0.22",
-      "port": 46234
+      "username": "dummy account",
+      "ipAddress": "0.0.0.0",
+      "port": 5003
     },
-    "time": "2023-02-24T00:14:41",
-    "content": "C'est quoi le STEP?"
+    "time": "2024-02-14T15:49:04",
+    "content": "allo"
+  },
+  {
+    "author": {
+      "username": "dummy account",
+      "ipAddress": "0.0.0.0",
+      "port": 5003
+    },
+    "time": "2024-02-14T15:49:11",
+    "content": "test"
   }
 ]

@@ -1,21 +1,18 @@
 package ca.qc.urizalaverdierebenouhoud.server;
 
 import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
-
-import java.io.*;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.net.Inet4Address;
-
 import ca.qc.urizalaverdierebenouhoud.message.Message;
 import ca.qc.urizalaverdierebenouhoud.users.Account;
 
-import java.util.Arrays;
+import java.io.*;
+import java.net.Inet4Address;
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClientHandler extends Thread {
 
-    private static final INF3405Logger clientHandlerLogger = new INF3405Logger("ClientHandler", null);
+    private static final INF3405Logger clientHandlerLogger = new INF3405Logger("ClientHandler", ClientHandler.class.getName());
     private final  Socket client;
     protected static final List<ClientHandler> handlers = new ArrayList<>();
     private boolean isRunning;
@@ -36,6 +33,8 @@ public class ClientHandler extends Thread {
                 interpretStreamContent(message);
             } catch (IOException e) {
                 handleError(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
         ClientHandler.clientHandlerLogger.info("Disconnected");
@@ -71,7 +70,7 @@ public class ClientHandler extends Thread {
      * @param in the input stream to interpret
      * @throws IOException if an I/O error occurs
      */
-    private void interpretStreamContent(DataInput in) throws IOException {
+    private void interpretStreamContent(DataInput in) throws IOException, InterruptedException {
         switch (readFirstByte(in)) {
             case 3 -> {
                 try {
@@ -83,6 +82,19 @@ public class ClientHandler extends Thread {
                 }
             }
             case 1 -> {
+                ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " requested recent history.");
+                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+                for (Message message : Message.getUpToLast15Messages()) {
+                    clientHandlerLogger.info("Sending message (history): " + message.toString());
+                    out.write(message.toString());
+                    out.newLine();
+                    out.flush();
+                    Thread.sleep(100);
+                }
+                clientHandlerLogger.info("Sent recent history to client #" + clientNumber);
+                out.write("historic-end");
+                out.newLine();
+                out.flush();
             } // send recent history
             case 2 -> { // client sent message
                 readMessage(in);
@@ -117,6 +129,7 @@ public class ClientHandler extends Thread {
     private void readMessage(DataInput message) throws IOException  // not sure if this is right
     {
         String text = message.readUTF();
+        Message.saveMessage(Message.parseMessageFromString(text));
         if (text.isEmpty())
             return;
         ClientHandler.clientHandlerLogger.info("(" + clientNumber + ")" + text);
@@ -136,4 +149,5 @@ public class ClientHandler extends Thread {
         out.writeByte(task);
         out.flush();
     }
+
 }
