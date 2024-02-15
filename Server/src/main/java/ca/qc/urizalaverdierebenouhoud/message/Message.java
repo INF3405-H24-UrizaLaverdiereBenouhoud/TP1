@@ -10,7 +10,6 @@ import com.google.gson.JsonSyntaxException;
 import java.io.File;
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -140,19 +139,18 @@ public class Message implements Comparable<Message> {
      * @return the parsed Message object
      * @throws UnknownHostException if the IP address of the author is invalid
      */
-    public static Message parseMessageFromString(String messageString) throws UnknownHostException {
+    public static Message parseMessageFromString(String messageString, Inet4Address ip) throws UnknownHostException {
         String regex = "\\[(.+?) - (\\d+\\.\\d+\\.\\d+\\.\\d+):(\\d+) - (\\d{4}-\\d{2}-\\d{2}@\\d{2}:\\d{2}:\\d{2})\\]: (.+)";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(messageString);
 
         if (matcher.matches()) {
             String username = matcher.group(1);
-            String ipAddress = matcher.group(2);
             int port = Integer.parseInt(matcher.group(3));
             String datetime = matcher.group(4);
             String message = matcher.group(5);
 
-            Client author = new Client(username, (Inet4Address) InetAddress.getByName(ipAddress), port);
+            Client author = new Client(username,ip, port);
             LocalDateTime time = LocalDateTime.parse(datetime, LocalDateTimeTypeAdapter.DISPLAY_DATE_TIME_FORMATTER);
             return new Message(author, time, message);
         }

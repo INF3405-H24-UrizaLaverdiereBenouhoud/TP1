@@ -14,7 +14,7 @@ import java.util.List;
 public class ClientHandler extends Thread {
 
     private static final INF3405Logger clientHandlerLogger = new INF3405Logger("ClientHandler", ClientHandler.class.getName());
-    private static Socket clientSocket;
+    private Socket clientSocket;
     protected static final List<ClientHandler> handlers = new ArrayList<>();
     private boolean isRunning;
     private static int clientNumber;
@@ -132,7 +132,7 @@ public class ClientHandler extends Thread {
     private void readMessage(DataInput message) throws IOException  // not sure if this is right
     {
         String text = message.readUTF();
-        Message.saveMessage(Message.parseMessageFromString(text));
+        Message.saveMessage(Message.parseMessageFromString(text, (Inet4Address) clientSocket.getInetAddress()));
         if (text.isEmpty())
             return;
         ClientHandler.clientHandlerLogger.info("(" + clientNumber + ")" + text);
@@ -152,7 +152,7 @@ public class ClientHandler extends Thread {
      * @param loginInfo The username and password of the account to find
      * @return The Client object corresponding to the account
      */
-    public static byte login(String loginInfo) {
+    public byte login(String loginInfo) {
         String[] splitLoginInfo = loginInfo.split("]: ");
         String[] userAndPassword = splitLoginInfo[1].split(" : ");
         String username = userAndPassword[0];
