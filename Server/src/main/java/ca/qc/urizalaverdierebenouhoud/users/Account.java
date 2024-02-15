@@ -1,5 +1,6 @@
 package ca.qc.urizalaverdierebenouhoud.users;
 
+import ca.qc.urizalaverdierebenouhoud.logger.INF3405Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
@@ -11,7 +12,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class Account {
-    private static final Logger accountLogger = Logger.getLogger(Account.class.getName());
+    private static final INF3405Logger accountLogger = new INF3405Logger("Account", Account.class.getName());
     protected static List<Account> accounts = new ArrayList<>();
     @SerializedName("username")
     private String username;
@@ -80,7 +81,7 @@ public class Account {
 
         String json = gson.toJson(Account.accounts);
         try {
-            Files.writeString(Paths.get(Account.accountsFile.getAbsolutePath()), json);
+            Files.write(Paths.get(Account.accountsFile.getAbsolutePath()), json.getBytes());
         } catch (IOException e) {
             Account.accountLogger.severe("File" + Account.accountsFile.getAbsolutePath() + " couldn't be written");
             System.exit(1);

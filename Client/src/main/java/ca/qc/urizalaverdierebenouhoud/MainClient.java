@@ -249,19 +249,19 @@ public class MainClient {
                 while (isNotAuthentified) {
                     byte task = in.readByte();
                     switch (task) {
-                        case '0' -> {
+                        case '0':
                             System.out.println("Bienvenue " + baseClient.getUsername());
                             isNotAuthentified = false;
-                        }
-                        case '1' -> {
+                            break;
+                        case '1':
                             System.out.println("Compte créé");
                             System.out.println("Bienvenue " + baseClient.getUsername());
                             isNotAuthentified = false;
-                        }
-                        case '2' -> {
+                            break;
+                        case '2':
                             System.out.println("Mot de passe invalide, veuiller réessayer.");
                             sendLoginInfo(client, scanner);
-                        }
+                            break;
                     }
                 }
             } catch (IOException e) {
