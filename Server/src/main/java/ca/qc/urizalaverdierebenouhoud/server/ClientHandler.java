@@ -77,6 +77,7 @@ public class ClientHandler extends Thread {
         switch (readFirstByte(in)) {
             case 3:
                 sendLogginResponse(login(in.readUTF()));
+                break;
             case 1:
                 ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " requested recent history.");
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
@@ -98,7 +99,7 @@ public class ClientHandler extends Thread {
             case 4:
                 ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " disconnected from server by request.");
                 closeClientConnection();
-
+                break;
             default:
                 ClientHandler.clientHandlerLogger.info("Client #" + clientNumber + " disconnected from server unexpectedly.");
                 closeClientConnection();
