@@ -136,9 +136,13 @@ public class ClientHandler extends Thread {
         Message.saveMessage(messageToSend);
         if (text.isEmpty())
             return;
-        ClientHandler.clientHandlerLogger.info("(" + clientNumber + ")" + text);
+        if (messageToSend == null) {
+            ClientHandler.clientHandlerLogger.warning("Message from client #" + clientNumber + " couldn't be parsed");
+            return;
+        }
+        ClientHandler.clientHandlerLogger.info("(" + clientNumber + ")" + messageToSend);
         for (ClientHandler handler : handlers) {
-            if (handler.clientSocket != this.clientSocket && messageToSend != null) {
+            if (handler.clientSocket != this.clientSocket) {
                 BufferedWriter out = (new BufferedWriter(new OutputStreamWriter(handler.clientSocket.getOutputStream())));
                 out.write(messageToSend.toString());
                 out.newLine();
