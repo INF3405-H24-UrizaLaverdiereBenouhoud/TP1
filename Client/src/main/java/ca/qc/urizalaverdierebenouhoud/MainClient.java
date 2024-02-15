@@ -110,6 +110,7 @@ public class MainClient {
                 retrieveHistoric(client);
 
                 //send message TODO: need to implement return from server
+                System.out.println("Pour quitter, entrer «exit» dans le terminal puis appuyez sur entrer.");
                 chatRoomFunctionalities(client, scanner);
             }
 
@@ -143,35 +144,39 @@ public class MainClient {
         }
     }
 
-    private static void sendLoginInfo(Socket client,Scanner scanner) throws IOException {
-
-
+    private static void sendLoginInfo(Socket client,Scanner scanner){
         //login
         System.out.println("Enter username :");
         String username = scanner.nextLine();
+        username = username.replaceAll("\\s", "");
+        username = username.replaceAll(":", "");
 
         System.out.println("Provide password:");
         String password = scanner.nextLine();
+        password = password.replaceAll("\\s", "");
+        password = password.replaceAll(":", "");
+
         Inet4Address address = (Inet4Address) client.getInetAddress();
         int port = client.getPort();
         Account account = new Account(username, password);
         baseClient = new Client(account, address, port);
 
-        //validation
-        //send login info to server (account/client)
-        DataOutputStream out = new DataOutputStream(client.getOutputStream());
-        encodeAndSend(3, out, username + " : " + password);
-
+        try {
+            DataOutputStream out = new DataOutputStream(client.getOutputStream());
+            encodeAndSend(3, out, username + " : " + password);
+        }  catch (IOException e) {
+            MainClient.mainClientLogger.severe("IOException when trying to send out to server");
+            isRunning = false;
+            System.exit(1);
+        }
         //Display historic
-        authentification(client);
-        System.out.println("--------------------");
+        authentification(client, scanner);
         chatRoomFunctionalities(client, scanner);
     }
 
     ////////////////////////////////////////////////////////
     //Milestone in connection
     ////////////////////////////////////////////////////////
-    // private static void chatRoomFunctionalities()
 
     /**
      * Chat room functionalities
@@ -245,7 +250,7 @@ public class MainClient {
         }
     }
 
-    private static void authentification(Socket client){
+    private static void authentification(Socket client, Scanner scanner){
             try {
                 boolean isNotAuthentified = true;
                 DataInputStream in = new DataInputStream(client.getInputStream());
@@ -263,11 +268,14 @@ public class MainClient {
                         }
                         case '2' -> {
                             System.out.println("Mot de passe invalide, veuiller réessayer.");
+                            sendLoginInfo(client, scanner);
                         }
                     }
                 }
             } catch (IOException e) {
+                MainClient.mainClientLogger.severe("IOException when trying to read server return");
                 isRunning = false;
+                System.exit(1);
             }
     }
 }
